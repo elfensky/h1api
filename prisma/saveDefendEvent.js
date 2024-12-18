@@ -1,8 +1,19 @@
 import prisma from './prisma.js';
 
-async function savedefendEvent(data) {
+async function saveDefendEvent(data) {
     try {
-        await prisma.defendEvent.create({
+        // Ensure that the timestamp exists in the Timestamp table
+        const existingTimestamp = await prisma.timestamp.findUnique({
+            where: { timestamp: data.time },
+        });
+
+        if (!existingTimestamp) {
+            throw new Error(
+                `saveDefentEvent() | Timestamp ${data.time} does not exist.`
+            );
+        }
+
+        const newDefendEvent = await prisma.defendEvent.create({
             data: {
                 timestamp: data.time, // Assuming start_time is used as a unique identifier
                 season: data.defend_event.season,
@@ -16,10 +27,14 @@ async function savedefendEvent(data) {
                 status: data.defend_event.status,
             },
         });
-        console.log('Defend event saved successfully.');
+        console.log('saveDefentEvent() | Defend event saved successfully.');
+        return newDefendEvent;
     } catch (error) {
-        console.error('Failed to save defend event:', error);
+        console.error(
+            'saveDefentEvent() | Failed to save defend event:',
+            error
+        );
     }
 }
 
-export default savedefendEvent;
+export default saveDefendEvent;

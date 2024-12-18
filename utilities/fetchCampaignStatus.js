@@ -1,8 +1,9 @@
+// FETCH FRESH DATA FROM API
 import axios from 'axios';
 import https from 'https';
 import FormData from 'form-data';
 
-async function getCampaignStatus() {
+export default async function fetchCampaignStatus() {
     // The API URL you want to ping
     const url = 'https://api.helldiversgame.com/1.0/';
     const form = new FormData();
@@ -30,5 +31,3 @@ async function getCampaignStatus() {
         throw error; // Re-throw the error if you want to handle it outside
     }
 }
-
-export default getCampaignStatus;

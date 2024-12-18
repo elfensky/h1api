@@ -5,12 +5,18 @@ import chalk from 'chalk'; // Colorful terminal output
 import dotenv from 'dotenv';
 import express from 'express';
 import { CronJob } from 'cron';
-//custom
-import getCampaignStatus from './utilities/getCampaignStatus.js';
-//db
-import prisma from './prisma/prisma.js';
-import saveTimestamp from './prisma/saveTimestamp.js';
-import saveDefendEvent from './prisma/saveDefendEvent.js';
+//utils
+import configureDB from './utilities/configureDB.js';
+import fetchCampaignStatus from './utilities/fetchCampaignStatus.js';
+import updateApiData from './utilities/updateApiData.js';
+// //db
+// import prisma from './prisma/prisma.js';
+// import saveTimestamp from './prisma/saveTimestamp.js';
+// import saveCampaignStatus from './prisma/saveCampaignStatus.js';
+// import saveDefendEvent from './prisma/saveDefendEvent.js';
+// import saveAttackEvent from './prisma/saveAttackEvent.js';
+// import saveStatistics from './prisma/saveStatistics.js';
+import getCampaignData from './prisma/getCampaignData.js';
 
 // create and configure application
 const app = express(); // create an express instance
@@ -22,6 +28,25 @@ const port = 3000;
 app.get('/', (req, res) => {
     // res.send("Hello World!");
     res.render('index', { title: 'Hey', message: 'Hello there!' });
+});
+
+app.get('/api/v1/campaign_status', async (req, res) => {
+    // const data = await getCampaignData();
+    // res.json(data);
+
+    try {
+        const data = await getCampaignData();
+        const json = JSON.stringify(data, (_, v) =>
+            typeof v === 'bigint' ? Number(v) : v
+        );
+
+        // res.json(data);
+        res.setHeader('Content-Type', 'application/json');
+        res.send(json);
+    } catch (error) {
+        console.error('Error fetching campaign data:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
 });
 
 app.post('/', (req, res) => {
@@ -37,49 +62,21 @@ app.delete('/user', (req, res) => {
 });
 
 async function main() {
-    // check if WAL mode is enabled, and enable if not
-    const currentMode = await prisma.$queryRaw`PRAGMA journal_mode;`;
-    console.log('Current journal mode:', currentMode);
-
-    // If the current mode is not WAL, set it to WAL
-    if (currentMode[0].journal_mode !== 'wal') {
-        const result = await prisma.$queryRaw`PRAGMA journal_mode = WAL;`;
-        console.log('Journal mode set to:', result);
-    } else {
-        console.log('Journal mode is already set to WAL.');
-    }
-
-    getCampaignStatus()
-        .then((data) => {
-            const timestamp = saveTimestamp(data);
-
-            // saveDefendEvent(data);
-            console.log(data);
-        })
-        .catch((error) =>
-            console.error('Failed to get campaign status:', error)
-        );
-
+    await configureDB(); // check if WAL mode is enabled, and enable if not
+    updateApiData();
     // start express server
     app.listen(port, () => {
         const getDataFromAPI = new CronJob(
             '* * * * *',
             () => {
-                getCampaignStatus()
-                    .then((data) => {
-                        saveDefendEvent(data);
-                        console.log(data);
-                    })
-                    .catch((error) =>
-                        console.error('Failed to get campaign status:', error)
-                    );
+                updateApiData();
             },
             null, // No onComplete function
             true, // Start the job right now)
             'Europe/Brussels' // Time zone);
         );
 
-        getDataFromAPI.stop();
+        // getDataFromAPI.stop();
 
         console.log(`Example app listening on port ${port}`);
     });

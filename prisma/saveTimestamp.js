@@ -11,17 +11,28 @@ async function saveTimestamp(data) {
 
         if (!existingEvent) {
             // If it doesn't exist, create a new defendEvent
-            await prisma.defendEvent.create({
+            const newEvent = await prisma.timestamp.create({
                 data: {
                     timestamp: data.time,
                 },
             });
-            console.log('saved new timestamp with id:', data.time);
+            console.log(
+                'saveTimestamp() | saved new timestamp with id:',
+                data.time
+            );
+            return newEvent; // Return the newly created event
         } else {
-            console.log(`timestamp ${data.time} already exists.`);
+            console.log(
+                `saveTimestamp() | timestamp ${data.time} already exists.`
+            );
+            return existingEvent; // Optionally return the existing event
         }
     } catch (error) {
-        console.error(`Failed to save timestamp with id: ${data.time}`, error);
+        console.error(
+            `saveTimestamp() | Failed to save timestamp with id: ${data.time}`,
+            error
+        );
+        throw error; // Re-throw the error if you want to handle it upstream
     }
 }
 

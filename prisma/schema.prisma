@@ -83,11 +83,11 @@ model Statistic {
   successful_defend_events  Int
   attack_events             Int
   successful_attack_events  Int
-  deaths                    Int
-  kills                     Int
-  accidentals               Int
-  shots                     Int
-  hits                      Int
+  deaths                    BigInt
+  kills                     BigInt
+  accidentals               BigInt
+  shots                     BigInt
+  hits                      BigInt
 
   // Define the relationship with TimeStamps
   Timestamp Timestamp @relation(fields: [timestamp], references: [timestamp])
