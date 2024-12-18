@@ -9,3 +9,86 @@ datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
+
+model Timestamp {
+    timestamp Int @id 
+    campaignStatuses CampaignStatus[]
+    defendEvents DefendEvent[]
+    attackEvents AttackEvent[]
+    statistics Statistic[]
+}
+
+model CampaignStatus {
+  id                 Int    @id @default(autoincrement())
+  timestamp          Int
+  season             Int
+  points             Int
+  points_taken       Int
+  points_max         Int
+  status             String
+  introduction_order Int
+
+  // Define the relationship with TimeStamps
+  Timestamp Timestamp @relation(fields: [timestamp], references: [timestamp])
+}
+
+model DefendEvent {
+  id          Int    @id @default(autoincrement())
+  timestamp   Int    // used to link together data from the same api query
+  season      Int
+  event_id    Int
+  start_time  Int
+  end_time    Int
+  region      Int
+  enemy       Int
+  points_max  Int
+  points      Int
+  status      String
+
+  // Define the relationship with TimeStamps
+  Timestamp Timestamp @relation(fields: [timestamp], references: [timestamp])
+}
+
+model AttackEvent {
+  id               Int    @id @default(autoincrement())
+  timestamp        Int    // used to link together data from the same api query
+  season           Int
+  event_id         Int
+  start_time       Int
+  end_time         Int
+  enemy            Int
+  points_max       Int
+  points           Int
+  status           String
+  players_at_start Int
+  max_event_id     Int
+
+  // Define the relationship with TimeStamps
+  Timestamp Timestamp @relation(fields: [timestamp], references: [timestamp])
+}
+
+model Statistic {
+  id                        Int    @id @default(autoincrement())
+  timestamp                 Int    // used to link together data from the same api query
+  season                    Int
+  season_duration           Int
+  enemy                     Int
+  players                   Int
+  total_unique_players      Int
+  missions                  Int
+  successful_missions       Int
+  total_mission_difficulty  Int
+  completed_planets         Int
+  defend_events             Int
+  successful_defend_events  Int
+  attack_events             Int
+  successful_attack_events  Int
+  deaths                    Int
+  kills                     Int
+  accidentals               Int
+  shots                     Int
+  hits                      Int
+
+  // Define the relationship with TimeStamps
+  Timestamp Timestamp @relation(fields: [timestamp], references: [timestamp])
+}
