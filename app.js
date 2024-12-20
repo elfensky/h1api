@@ -5,60 +5,81 @@ import chalk from 'chalk'; // Colorful terminal output
 import dotenv from 'dotenv';
 import express from 'express';
 import { CronJob } from 'cron';
+// documentation
+import swaggerJsdoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
 //utils
 import configureDB from './utilities/configureDB.js';
 import fetchCampaignStatus from './utilities/fetchCampaignStatus.js';
 import updateApiData from './utilities/updateApiData.js';
-// //db
-// import prisma from './prisma/prisma.js';
-// import saveTimestamp from './prisma/saveTimestamp.js';
-// import saveCampaignStatus from './prisma/saveCampaignStatus.js';
-// import saveDefendEvent from './prisma/saveDefendEvent.js';
-// import saveAttackEvent from './prisma/saveAttackEvent.js';
-// import saveStatistics from './prisma/saveStatistics.js';
-import getCampaignData from './prisma/getCampaignData.js';
+//routes
+import campaignRoute from './routes/v1/campaign.js';
+import rebroadcastRoute from './routes/v1/rebroadcast.js';
 
 // create and configure application
 const app = express(); // create an express instance
 app.use(express.static('public')); // set the static files location to /public, so a reference to /img/logo.png will load /public/img/logo.png
 app.set('view engine', 'pug'); // set the view engine to pug
-
 const port = 3000;
+const swaggerDefinition = {
+    openapi: '3.0.0',
+    info: {
+        title: 'Helldivers I',
+        version: '1.0.0',
+        description: 'A description of your API',
+    },
+    servers: [
+        {
+            url: 'http://localhost:3000',
+        },
+    ],
+};
+const swaggerOptions = {
+    // Options for the swagger docs
+    swaggerDefinition,
+    // Path to the API docs
+    apis: ['./routes/*.js'], // Adjust the path according to your project structure
+};
+// Initialize swagger-jsdoc
+const swaggerSpec = swaggerJsdoc(swaggerOptions);
 
-app.get('/', (req, res) => {
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+app.use(campaignRoute); //v1/campaign
+app.use(rebroadcastRoute); //v1/rebroadcast
+
+app.get('/html-pug', (req, res) => {
     // res.send("Hello World!");
     res.render('index', { title: 'Hey', message: 'Hello there!' });
 });
 
-app.get('/api/v1/campaign_status', async (req, res) => {
-    // const data = await getCampaignData();
-    // res.json(data);
+app.get('/v1/timestamps', async (req, res) => {
+    //cursor based pagination: GET /users?cursor=1734728860&limit=10
+    const limit = parseInt(req.query.limit) || 10;
+    const cursor = req.query.cursor || null;
 
     try {
-        const data = await getCampaignData();
-        const json = JSON.stringify(data, (_, v) =>
-            typeof v === 'bigint' ? Number(v) : v
-        );
+        const users = await prisma.user.findMany({
+            take: limit,
+            skip: cursor ? 1 : 0, // Skip the cursor if provided
+            cursor: cursor ? { id: cursor } : undefined,
+            orderBy: { id: 'asc' },
+        });
 
-        // res.json(data);
-        res.setHeader('Content-Type', 'application/json');
-        res.send(json);
+        const nextCursor =
+            users.length === limit ? users[users.length - 1].id : null;
+
+        res.json({
+            data: users,
+            meta: {
+                nextCursor,
+            },
+        });
     } catch (error) {
-        console.error('Error fetching campaign data:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        res.status(500).json({
+            error: 'An error occurred while fetching users.',
+        });
     }
-});
-
-app.post('/', (req, res) => {
-    res.send('Got a POST request');
-});
-
-app.put('/user', (req, res) => {
-    res.send('Got a PUT request at /user');
-});
-
-app.delete('/user', (req, res) => {
-    res.send('Got a DELETE request at /user');
 });
 
 async function main() {
@@ -77,8 +98,12 @@ async function main() {
         );
 
         // getDataFromAPI.stop();
+        console.log(`API is running on 127.0.0.1:${port}`);
+        console.log(
+            `Swagger docs are available at http://127.0.0.1:${port}/docs`
+        );
 
-        console.log(`Example app listening on port ${port}`);
+        // console.log(`Example app listening on port ${port}`);
     });
 }
 

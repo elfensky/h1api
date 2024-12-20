@@ -1,13 +1,18 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-generator client {
-  provider = "prisma-client-js"
+datasource db {
+    provider = "mysql"
+    url      = env("DATABASE_MYSQL_URL")
 }
 
-datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+// datasource db {
+//   provider = "sqlite"
+//   url      = env("DATABASE_SQLITE_URL")
+// }
+
+generator client {
+  provider = "prisma-client-js"
 }
 
 model Timestamp {
@@ -92,3 +97,19 @@ model Statistic {
   // Define the relationship with TimeStamps
   Timestamp Timestamp @relation(fields: [timestamp], references: [timestamp])
 }
+
+// //used for keeping track of, and updating a specific message every day, instead of spamming the chat. 
+// model Posts {
+//     id Int @id @default(autoincrement())
+//     day Int // link which message_id to use for which day
+//     message_id Int // link which message_id to use for which day
+//     last_updated Int // timestamp of last update
+//     times_updated Int // number of times updated
+// }
+
+// update model schema by running:
+// initialize the database
+// -> npx prisma migrate dev --name "initial"
+
+// update the database schema
+// -> npx prisma migrate dev --name "name/description"
