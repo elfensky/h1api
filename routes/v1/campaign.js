@@ -6,7 +6,7 @@ import express from 'express';
 // import saveDefendEvent from './prisma/saveDefendEvent.js';
 // import saveAttackEvent from './prisma/saveAttackEvent.js';
 // import saveStatistics from './prisma/saveStatistics.js';
-import getCampaignData from '../../prisma/getCampaignData.js';
+import getCampaignData from '../../prisma/functions/getCampaignData.js';
 
 const router = express.Router();
 

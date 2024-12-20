@@ -33,12 +33,22 @@ const swaggerDefinition = {
             url: 'http://localhost:3000',
         },
     ],
+    tags: [
+        {
+            name: 'API',
+            description: 'API related endpoints',
+        },
+        {
+            name: 'HTML',
+            description: 'HTML related endpoints',
+        },
+    ],
 };
 const swaggerOptions = {
     // Options for the swagger docs
     swaggerDefinition,
     // Path to the API docs
-    apis: ['./routes/*.js'], // Adjust the path according to your project structure
+    apis: ['./routes/**/*.js'], // Adjust the path according to your project structure
 };
 // Initialize swagger-jsdoc
 const swaggerSpec = swaggerJsdoc(swaggerOptions);

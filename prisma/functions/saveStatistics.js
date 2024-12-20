@@ -1,4 +1,4 @@
-import prisma from './prisma.js';
+import prisma from '../prisma.js';
 
 export default async function saveStatistics(data) {
     try {
