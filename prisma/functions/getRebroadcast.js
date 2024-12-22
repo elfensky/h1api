@@ -1,6 +1,6 @@
 import prisma from '../prisma.js';
 
-export default async function getCampaignData() {
+export default async function getRebroadcast() {
     // Get latest Timestamp record
     const latestTimestamp = await prisma.timestamp.findFirst({
         orderBy: {
@@ -12,7 +12,7 @@ export default async function getCampaignData() {
         throw new Error('No timestamp found in database.');
     }
 
-    // console.log('getCampaignData() | Latest timestamp:', latestTimestamp);
+    // console.log('getRebroadcast() | Latest timestamp:', latestTimestamp);
 
     // Get all CampaignStatus records for the latest timestamp
     const campaignStatus = await prisma.campaignStatus.findMany({
@@ -29,7 +29,7 @@ export default async function getCampaignData() {
         },
     });
 
-    // console.log('getCampaignData() | Campaign status:', campaignStatus);
+    // console.log('getRebroadcast() | Campaign status:', campaignStatus);
 
     // Get all DefendEvent records for the latest timestamp
     const defendEvents = await prisma.defendEvent.findFirst({
@@ -49,7 +49,7 @@ export default async function getCampaignData() {
         },
     });
 
-    // console.log('getCampaignData() | Defend events:', defendEvents);
+    // console.log('getRebroadcast() | Defend events:', defendEvents);
 
     // Get all AttackEvent records for the latest timestamp
     const attackEvents = await prisma.attackEvent.findMany({
@@ -70,7 +70,7 @@ export default async function getCampaignData() {
         },
     });
 
-    // console.log('getCampaignData() | Attack events:', attackEvents);
+    // console.log('getRebroadcast() | Attack events:', attackEvents);
 
     //Get all Statistic records for the latest timestamp
     const statistics = await prisma.statistic.findMany({

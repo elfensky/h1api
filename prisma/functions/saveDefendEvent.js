@@ -27,8 +27,8 @@ async function saveDefendEvent(data) {
                 status: data.defend_event.status,
             },
         });
-        // console.log('saveDefentEvent() | Defend event saved successfully.');
-        throw new Error('saveDefentEvent() | Defend event FAILED TEST');
+        console.log('saveDefentEvent() | Defend event saved successfully.');
+        // throw new Error('saveDefentEvent() | Defend event FAILED TEST');
         // return newDefendEvent;
     } catch (error) {
         console.error(

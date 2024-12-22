@@ -8,7 +8,7 @@ const router = express.Router();
  *   get:
  *     tags:
  *       - HTML
- *     summary: Retrieve Helldiver I statistics
+ *     summary: TODO - Retrieve Helldiver I statistics
  *     description: Fetches Helldiver I statistics and displays them as pretty HTML using a pug template.
  *     responses:
  *       200:

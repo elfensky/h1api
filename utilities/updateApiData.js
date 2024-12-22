@@ -6,7 +6,7 @@ import saveCampaignStatus from '../prisma/functions/saveCampaignStatus.js';
 import saveDefendEvent from '../prisma/functions/saveDefendEvent.js';
 import saveAttackEvent from '../prisma/functions/saveAttackEvent.js';
 import saveStatistics from '../prisma/functions/saveStatistics.js';
-import getCampaignData from '../prisma/functions/getCampaignData.js';
+import getRebroadcast from '../prisma/functions/getRebroadcast.js';
 //utils
 import { deepDiff } from '@bundled-es-modules/deep-diff';
 
@@ -31,7 +31,7 @@ export default async function updateApiData() {
                 statistics: statistics,
             };
 
-            const savedData = await getCampaignData();
+            const savedData = await getRebroadcast();
 
             // compareObjects(savedData, response);
             if (response === data) {

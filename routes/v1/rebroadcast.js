@@ -1,5 +1,5 @@
 import express from 'express';
-import getCampaignData from '../../prisma/functions/getCampaignData.js'; //db
+import getRebroadcast from '../../prisma/functions/getRebroadcast.js'; //db
 
 const router = express.Router();
 
@@ -42,7 +42,7 @@ const router = express.Router();
  */
 router.get('/v1/rebroadcast', async (req, res) => {
     try {
-        const data = await getCampaignData();
+        const data = await getRebroadcast();
         const json = JSON.stringify(data, (_, v) =>
             typeof v === 'bigint' ? Number(v) : v
         );

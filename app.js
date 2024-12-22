@@ -13,8 +13,8 @@ import configureDB from './utilities/configureDB.js';
 import fetchCampaignStatus from './utilities/fetchCampaignStatus.js';
 import updateApiData from './utilities/updateApiData.js';
 //routes
-import campaignRoute from './routes/v1/campaign.js';
 import rebroadcastRoute from './routes/v1/rebroadcast.js';
+import defendRoute from './routes/v1/defend.js';
 
 // create and configure application
 const app = express(); // create an express instance
@@ -55,8 +55,8 @@ const swaggerSpec = swaggerJsdoc(swaggerOptions);
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-app.use(campaignRoute); //v1/campaign
 app.use(rebroadcastRoute); //v1/rebroadcast
+app.use(defendRoute); //v1/defend
 
 app.get('/html-pug', (req, res) => {
     // res.send("Hello World!");

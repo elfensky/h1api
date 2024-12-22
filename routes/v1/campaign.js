@@ -6,13 +6,13 @@ import express from 'express';
 // import saveDefendEvent from './prisma/saveDefendEvent.js';
 // import saveAttackEvent from './prisma/saveAttackEvent.js';
 // import saveStatistics from './prisma/saveStatistics.js';
-import getCampaignData from '../../prisma/functions/getCampaignData.js';
+import getRebroadcast from '../../prisma/functions/getRebroadcast.js';
 
 const router = express.Router();
 
 router.get('/v1/campaign', async (req, res) => {
     try {
-        const data = await getCampaignData();
+        const data = await getRebroadcast();
         const json = JSON.stringify(data, (_, v) =>
             typeof v === 'bigint' ? Number(v) : v
         );
@@ -28,11 +28,11 @@ router.get('/v1/campaign', async (req, res) => {
 export default router;
 
 // app.get('/v1/campaign', async (req, res) => {
-//     // const data = await getCampaignData();
+//     // const data = await getRebroadcast();
 //     // res.json(data);
 
 //     try {
-//         const data = await getCampaignData();
+//         const data = await getRebroadcast();
 //         const json = JSON.stringify(data, (_, v) =>
 //             typeof v === 'bigint' ? Number(v) : v
 //         );
