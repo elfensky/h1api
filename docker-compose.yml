@@ -4,6 +4,6 @@ services:
         container_name: h1api # Optional: name your container
         env_file:
             - .env
-        volumes:
-            - /path/on/host:/app/data
+        # volumes:
+        #     - /path/on/host:/app/data
         restart: unless-stopped # Automatically restart the container unless it is explicitly stopped
