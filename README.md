@@ -33,11 +33,11 @@ docker build -t elfensky/h1api:latest .
 
 #### Build production
 
-docker buildx build --platform linux/amd64 -t elfensky/h1bot:latest . --push
+docker buildx build --platform linux/amd64 -t elfensky/h1api:latest . --push
 
 #### Run in production
 
-1. docker pull elfensky/h1bot:latest
+1. docker pull elfensky/h1api:latest
 2. create an .env file with the same variables as above and note its path
 3. create a docker-compose.yml file with the following content:
 

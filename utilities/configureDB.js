@@ -69,9 +69,8 @@ async function runMigrations() {
     const version = await getAppVersion();
 
     try {
-        const { stdout, stderr } = await execAsync(
-            `npx prisma migrate dev --name "app:${version}"`
-        );
+        //`npx prisma migrate dev --name "app:${version}"`
+        const { stdout, stderr } = await execAsync(`npx prisma migrate deploy`);
         if (stderr) {
             console.error(`Migration error: ${stderr}`);
             throw new Error(stderr);
