@@ -1,3 +1,4 @@
+import './middleware/sentry.js'; // Sentry instrumentation
 // logs, monitoring, etc
 import pino from 'pino'; // Low overhead Node.js logger
 import chalk from 'chalk'; // Colorful terminal output
@@ -8,16 +9,19 @@ import { CronJob } from 'cron';
 // documentation
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
-//utils
+// middleware
+import measure from './middleware/measure.js';
+// utils
 import configureDB from './utilities/configureDB.js';
 import fetchCampaignStatus from './utilities/fetchCampaignStatus.js';
 import updateApiData from './utilities/updateApiData.js';
-//routes
+// routes
 import rebroadcastRoute from './routes/v1/rebroadcast.js';
 import defendRoute from './routes/v1/defend.js';
 
 // create and configure application
 const app = express(); // create an express instance
+app.use(measure);
 app.use(express.static('public')); // set the static files location to /public, so a reference to /img/logo.png will load /public/img/logo.png
 app.set('view engine', 'pug'); // set the view engine to pug
 const port = 3000;
@@ -25,12 +29,17 @@ const swaggerDefinition = {
     openapi: '3.0.0',
     info: {
         title: 'Helldivers I',
-        version: '1.0.0',
+        version: '0.1.0',
         description: 'A description of your API',
     },
     servers: [
         {
-            url: 'http://localhost:3000',
+            url: 'https://api.helldivers.bot',
+            description: 'Production server',
+        },
+        {
+            url: 'http://127.0.0.1:3000',
+            description: 'Local Development server',
         },
     ],
     tags: [

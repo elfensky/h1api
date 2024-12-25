@@ -6,18 +6,14 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-// datasource db {
-//   provider = "sqlite"
-//   url      = env("DATABASE_URL")
-// }
-
 generator client {
   provider = "prisma-client-js"
   binaryTargets = ["native", "darwin-arm64", "linux-arm64-openssl-3.0.x", "linux-musl-openssl-3.0.x"]
 }
 
 model Timestamp {
-    timestamp Int @id 
+    id String @id @default(uuid(7))
+    timestamp DateTime @unique
     campaignStatuses CampaignStatus[]
     defendEvents DefendEvent[]
     attackEvents AttackEvent[]
@@ -25,8 +21,8 @@ model Timestamp {
 }
 
 model CampaignStatus {
-  id                 Int    @id @default(autoincrement())
-  timestamp          Int
+  id                 String @id @default(uuid(7))
+  timestamp          DateTime
   season             Int
   points             Int
   points_taken       Int
@@ -39,8 +35,8 @@ model CampaignStatus {
 }
 
 model DefendEvent {
-  id          Int    @id @default(autoincrement())
-  timestamp   Int    // used to link together data from the same api query
+  id          String @id @default(uuid(7))
+  timestamp   DateTime    // used to link together data from the same api query
   season      Int
   event_id    Int
   start_time  Int
@@ -56,8 +52,8 @@ model DefendEvent {
 }
 
 model AttackEvent {
-  id               Int    @id @default(autoincrement())
-  timestamp        Int    // used to link together data from the same api query
+  id               String @id @default(uuid(7))
+  timestamp        DateTime    // used to link together data from the same api query
   season           Int
   event_id         Int
   start_time       Int
@@ -74,8 +70,8 @@ model AttackEvent {
 }
 
 model Statistic {
-  id                        Int    @id @default(autoincrement())
-  timestamp                 Int    // used to link together data from the same api query
+  id                        String @id @default(uuid(7))
+  timestamp                 DateTime    // used to link together data from the same api query
   season                    Int
   season_duration           Int
   enemy                     Int

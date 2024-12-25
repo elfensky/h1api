@@ -46,8 +46,10 @@ services:
     h1api:
         image: elfensky/h1api:latest # Replace with the correct image name and tag
         container_name: h1api # Optional: name your container
-        env_file:
-            - .env
+        # env_file:
+        #     - .env
+        environment:
+            - DATABASE_URL="mysql://user:password@host.docker.internal/database_name"
         volumes:
             - /path/on/host:/app/data
         restart: unless-stopped # Automatically restart the container unless it is explicitly stopped

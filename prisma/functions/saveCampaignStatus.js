@@ -1,6 +1,6 @@
 import prisma from '../prisma.js';
 
-async function saveCampaignStatus(data) {
+async function saveCampaignStatus(data, foreignID = 0) {
     try {
         // Ensure that the timestamp exists in the Timestamp table
         const existingTimestamp = await prisma.timestamp.findUnique({

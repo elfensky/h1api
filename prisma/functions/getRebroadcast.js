@@ -12,8 +12,6 @@ export default async function getRebroadcast() {
         throw new Error('No timestamp found in database.');
     }
 
-    // console.log('getRebroadcast() | Latest timestamp:', latestTimestamp);
-
     // Get all CampaignStatus records for the latest timestamp
     const campaignStatus = await prisma.campaignStatus.findMany({
         where: {
@@ -28,8 +26,6 @@ export default async function getRebroadcast() {
             introduction_order: true,
         },
     });
-
-    // console.log('getRebroadcast() | Campaign status:', campaignStatus);
 
     // Get all DefendEvent records for the latest timestamp
     const defendEvents = await prisma.defendEvent.findFirst({
@@ -48,8 +44,6 @@ export default async function getRebroadcast() {
             status: true,
         },
     });
-
-    // console.log('getRebroadcast() | Defend events:', defendEvents);
 
     // Get all AttackEvent records for the latest timestamp
     const attackEvents = await prisma.attackEvent.findMany({
@@ -70,10 +64,8 @@ export default async function getRebroadcast() {
         },
     });
 
-    // console.log('getRebroadcast() | Attack events:', attackEvents);
-
-    //Get all Statistic records for the latest timestamp
-    const statistics = await prisma.statistic.findMany({
+    // Get all Statistic records for the latest timestamp
+    const statisticsBigInt = await prisma.statistic.findMany({
         where: {
             timestamp: latestTimestamp.timestamp,
         },
@@ -98,7 +90,21 @@ export default async function getRebroadcast() {
             hits: true,
         },
     });
+    const statistics = statisticsBigInt.map((stat) => {
+        const convertedStat = {};
+        for (const [key, value] of Object.entries(stat)) {
+            // Check if the value is a BigInt and convert it to a Number
+            if (typeof value === 'bigint') {
+                // Convert to Number, but be cautious of large values
+                convertedStat[key] = Number(value);
+            } else {
+                convertedStat[key] = value;
+            }
+        }
+        return convertedStat;
+    });
 
+    // Generate response object
     const response = {
         time: latestTimestamp.timestamp,
         error_code: 0,

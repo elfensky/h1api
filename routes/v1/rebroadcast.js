@@ -1,6 +1,10 @@
 import express from 'express';
+import { performance } from 'perf_hooks';
+// components
 import getRebroadcast from '../../prisma/functions/getRebroadcast.js'; //db
-
+import getInfo from '../../utilities/info.js';
+import json from '../../utilities/json.js';
+// setup
 const router = express.Router();
 
 /**
@@ -41,17 +45,22 @@ const router = express.Router();
  *                   example: Internal Server Error
  */
 router.get('/v1/rebroadcast', async (req, res) => {
+    const start = performance.now();
     try {
         const data = await getRebroadcast();
-        const json = JSON.stringify(data, (_, v) =>
-            typeof v === 'bigint' ? Number(v) : v
-        );
 
-        res.setHeader('Content-Type', 'application/json');
-        res.send(json);
+        if (!data) {
+            throw new Error('failed getDefendEvent()');
+        } else {
+            // const info = getInfo(start, 200);
+            // res.setHeader('Content-Type', 'application/json');
+            // res.status(info.code).send(json({ info, data }));
+            res.json(data);
+        }
     } catch (error) {
-        console.error('Error fetching campaign data:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        console.error('rebroadcast.js - ', error);
+        const info = getInfo(start, 500);
+        res.status(info.code).json({ info, error: error.message });
     }
 });
 
