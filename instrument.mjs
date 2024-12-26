@@ -25,5 +25,4 @@ Sentry.init({
     profilesSampleRate: 1.0,
 });
 
-console.log('[Sentry] initializing sentry');
-// Sentry.profiler.startProfiler();
+Sentry.profiler.startProfiler();

@@ -1,16 +1,21 @@
-import './middleware/sentry.js'; // Sentry instrumentation
+'use strict';
+// import './middleware/sentry.js'; // Sentry instrumentation
 // logs, monitoring, etc
-import pino from 'pino'; // Low overhead Node.js logger
-import chalk from 'chalk'; // Colorful terminal output
+import * as Sentry from '@sentry/node';
+// import pinoHttp from 'pino-http';
+import getLogger, { getStream } from './utilities/logger.js';
+import chalk from 'chalk';
 //dependencies
-import dotenv from 'dotenv';
+// import dotenv from 'dotenv';
 import express from 'express';
 import { CronJob } from 'cron';
+
 // documentation
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 // middleware
-import measure from './middleware/measure.js';
+import performanceMiddleware from './middleware/performance.js';
+import umamiMiddleware from './middleware/umami.js';
 // utils
 import configureDB from './utilities/configureDB.js';
 import fetchCampaignStatus from './utilities/fetchCampaignStatus.js';
@@ -19,12 +24,21 @@ import updateApiData from './utilities/updateApiData.js';
 import rebroadcastRoute from './routes/v1/rebroadcast.js';
 import defendRoute from './routes/v1/defend.js';
 
-// create and configure application
+// INITIALIZE AND CONFIGURE APPLICATION
+const log = getLogger();
+log.info('Initializing application...');
+
 const app = express(); // create an express instance
-app.use(measure);
+const port = 3000;
+Sentry.setupExpressErrorHandler(app);
 app.use(express.static('public')); // set the static files location to /public, so a reference to /img/logo.png will load /public/img/logo.png
 app.set('view engine', 'pug'); // set the view engine to pug
-const port = 3000;
+
+// MIDDLEWARE
+// app.use(performanceMiddleware); // performance middleware
+// app.use(umamiMiddleware); // umami middleware
+// app.use(pinoHttp(getStream())); // pino-http logging middleware
+// DOCUMENTATION
 const swaggerDefinition = {
     openapi: '3.0.0',
     info: {
@@ -59,19 +73,18 @@ const swaggerOptions = {
     // Path to the API docs
     apis: ['./routes/**/*.js'], // Adjust the path according to your project structure
 };
-// Initialize swagger-jsdoc
-const swaggerSpec = swaggerJsdoc(swaggerOptions);
+const swaggerSpec = swaggerJsdoc(swaggerOptions); // Initialize swagger-jsdoc
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec)); // create swagger route
 
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
+// ROUTES - API
 app.use(rebroadcastRoute); //v1/rebroadcast
 app.use(defendRoute); //v1/defend
 
+// ROUTES - HTML
 app.get('/html-pug', (req, res) => {
     // res.send("Hello World!");
     res.render('index', { title: 'Hey', message: 'Hello there!' });
 });
-
 app.get('/v1/timestamps', async (req, res) => {
     //cursor based pagination: GET /users?cursor=1734728860&limit=10
     const limit = parseInt(req.query.limit) || 10;
@@ -105,6 +118,7 @@ async function main() {
     await configureDB(); // check if WAL mode is enabled, and enable if not
     updateApiData();
     // start express server
+
     app.listen(port, () => {
         const getDataFromAPI = new CronJob(
             '* * * * *',
@@ -116,17 +130,20 @@ async function main() {
             'Europe/Brussels' // Time zone);
         );
 
-        // getDataFromAPI.stop();
-        console.log(`API is running on 127.0.0.1:${port}`);
-        console.log(
-            `Swagger docs are available at http://127.0.0.1:${port}/docs`
+        log.info(
+            'APP - Express is running on ' +
+                chalk.yellow.underline.underline('http://127.0.0.1:' + port)
         );
-
-        // console.log(`Example app listening on port ${port}`);
+        log.info(
+            'APP - Swagger docs are available at ' +
+                chalk.yellow.underline.underline(
+                    'http://127.0.0.1:' + port + '/docs'
+                )
+        );
     });
 }
 
 main().catch((error) => {
-    console.error('Failed to start server:', error);
+    log.error('Failed to start server:', error);
     prisma.$disconnect();
 });

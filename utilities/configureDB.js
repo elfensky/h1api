@@ -4,43 +4,52 @@ import { fileURLToPath } from 'url';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import prisma from '../prisma/prisma.js';
+import getLogger from './logger.js';
+import chalk from 'chalk';
 
+const log = getLogger();
 const execAsync = promisify(exec);
 
 export default async function configureDB() {
     const provider = getPrismaProvider();
 
     if (provider === 'sqlite') {
-        console.log('db: using sqlite');
+        log.info('DATABASE - using ' + chalk.yellow('sqlite') + ' provider.');
+
         const currentMode = await prisma.$queryRaw`PRAGMA journal_mode;`;
-        console.log('db: Current journal mode:', currentMode);
 
         // If the current mode is not WAL, set it to WAL
         if (currentMode[0].journal_mode !== 'wal') {
+            log.info(
+                'DATABASE - journal mode is set to ' + chalk.yellow(currentMode)
+            );
+            log.info('DATABASE - setting journal mode to WAL...');
             const result = await prisma.$queryRaw`PRAGMA journal_mode = WAL;`;
-            console.log('db: Journal mode set to:', result);
+            log.info(
+                'DATABASE - successfully set journal mode to ' +
+                    chalk.yellow(currentMode)
+            );
         } else {
-            console.log('db: Journal mode is already set to WAL.');
+            log.info('DATABASE - journal mode is already set to WAL');
         }
 
         // migrate the database if needed
         await runMigrations();
-        console.log('db: Database migrations completed successfully.');
-
+        log.info('DATABASE - completed configuration.');
         return true;
     }
 
     if (provider === 'mysql') {
-        console.log('db: using mySQL');
+        log.info('DATABASE - using ' + chalk.yellow('mysql') + ' provider');
 
         // migrate the database if needed
         await runMigrations();
-        console.log('db: Database migrations completed successfully.');
-
+        log.info('DATABASE - completed configuration');
         return true;
     }
 
-    throw new Error('db: Unknown database provider:', provider);
+    log.error('DATABASE - unknown database provider:', chalk.yellow(provider));
+    throw new Error('DATABASE - unknown database provider:', provider);
 }
 
 function getPrismaProvider() {
@@ -65,27 +74,18 @@ function getPrismaProvider() {
 }
 
 async function runMigrations() {
-    console.log('db: starting database migrations...');
-    const version = await getAppVersion();
-
+    log.info('DATABASE - starting migrations...');
     try {
-        //`npx prisma migrate dev --name "app:${version}"`
         const { stdout, stderr } = await execAsync(`npx prisma migrate deploy`);
         if (stderr) {
-            console.error(`Migration error: ${stderr}`);
             throw new Error(stderr);
         }
-        console.log(`Migration output: ${stdout}`);
+
+        // const cleanedStdout = stdout.replace(/(\r?\n){3,}/g, '\n');
+        // log.info('\n' + cleanedStdout);
+        log.info('DATABASE - finished migrations');
     } catch (error) {
-        console.error('Failed to run migrations:', error);
+        log.error('DATABASE - failed migrations \n' + error);
         throw error;
     }
-}
-
-async function getAppVersion() {
-    const packageJsonPath = path.resolve(process.cwd(), 'package.json');
-    const packageJson = await promises.readFile(packageJsonPath, 'utf-8');
-    const { version } = JSON.parse(packageJson);
-    console.log(`App version: ${version}`);
-    return version;
 }

@@ -105,8 +105,9 @@ model Statistic {
 // }
 
 // update model schema by running:
-// initialize the database
-// -> npx prisma migrate dev --name "initial"
 
 // update the database schema
-// -> npx prisma migrate dev --name "name/description"
+// -> npx prisma migrate dev --name "name or description"
+
+// apply db schema on prod 
+// -> npx prisma migrate deploy

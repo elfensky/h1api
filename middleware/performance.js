@@ -1,7 +1,7 @@
 import { performance } from 'perf_hooks';
 
 // Middleware to log request performance
-export default function measure(req, res, next) {
+export default function performanceMiddleware(req, res, next) {
     req.startTime = performance.now();
 
     res.on('finish', () => {
