@@ -95,15 +95,15 @@ async function main() {
 
     // start express server
     app.listen(port, () => {
-        // const getDataFromAPI = new CronJob(
-        //     '* * * * *',
-        //     () => {
-        //         updateApiData();
-        //     },
-        //     null, // No onComplete function
-        //     true, // Start the job right now)
-        //     'Europe/Brussels' // Time zone);
-        // );
+        const getDataFromAPI = new CronJob(
+            '* * * * *',
+            () => {
+                updateApiData();
+            },
+            null, // No onComplete function
+            true, // Start the job right now)
+            'Europe/Brussels' // Time zone);
+        );
 
         log.info(
             'APP - Express is running on ' +

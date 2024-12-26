@@ -44,20 +44,22 @@ docker buildx build --platform linux/amd64 -t elfensky/h1api:latest . --push
 ```yml
 services:
     h1api:
-        image: elfensky/h1api:latest # Replace with the correct image name and tag
+        image: elfensky/h1api:latest
         container_name: h1api # Optional: name your container
-        # env_file:
-        #     - .env
+        ports:
+            - '52001:3000'
         environment:
-            - DATABASE_URL="mysql://user:password@host.docker.internal/database_name"
-        volumes:
-            - /path/on/host:/app/data
-        restart: unless-stopped # Automatically restart the container unless it is explicitly stopped
+            - DATABASE_URL=${DATABASE_URL}
+            - SENTRY_DSN=${SENTRY_DSN}
+        restart: unless-stopped
+        network_mode: bridge # Use the default, ufw-whitelisted Docker Network
+        extra_hosts:
+            - 'host.docker.internal:host-gateway' # pass the host to container, required on linux
 ```
 
 4. run `docker-compose up -d` to start the bot
 
 #### Updates
 
-1. `docker pull elfensky/h1bot:latest` to pull the latest version
-2. `docker-compose up -d` to recreate and restart the container
+1. `docker pull elfensky/h1api:latest` to pull the latest version
+2. `docker compose up -d` to recreate and restart the container

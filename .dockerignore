@@ -3,6 +3,7 @@ node_modules
 
 # Ignore local environment files
 .env
+.git
 
 # Ignore prisma migrations
 # prisma/migrations
