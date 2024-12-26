@@ -1,11 +1,22 @@
 import { performance } from 'perf_hooks';
 
-export default function getInfo(start, code) {
+export default function getInfo(start, code, next, total) {
     const end = performance.now();
-    return {
-        ms: timeDiffInMiliseconds(start, end),
+    const data = {
+        ms: Number((performance.now() - start).toFixed(3)),
         code: http[code].code,
-        message: http[code].message,
+        status: http[code].message,
+    };
+
+    if (next) {
+        data.next = next;
+    }
+    if (total) {
+        data.total = total;
+    }
+
+    return {
+        ...data,
     };
 }
 

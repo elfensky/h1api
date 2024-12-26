@@ -8,7 +8,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /v1/defend:
+ * /v1/event:
  *   get:
  *     summary: Retrieve latest defend event.
  *     description: Fetches the latest defend event information from the database and returns it as JSON.
@@ -71,7 +71,7 @@ const router = express.Router();
  *                   type: string
  *                   example: Internal Server Error
  */
-router.get('/v1/defend', async (req, res) => {
+router.get('/v1/event', async (req, res) => {
     try {
         const data = await getDefendEvent();
         if (!data) {
@@ -87,7 +87,7 @@ router.get('/v1/defend', async (req, res) => {
         }
     } catch (error) {
         console.error('Error fetching campaign data:', error);
-        const info = getInfo(start, 500);
+        const info = getInfo(req.startTime, 500);
         res.status(info.code).json({ info, error: error.message });
     }
 });
