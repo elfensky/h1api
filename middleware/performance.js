@@ -1,4 +1,8 @@
 import { performance } from 'perf_hooks';
+// logs, monitoring, etc
+import getLogger from '../utilities/logger.js';
+import chalk from 'chalk';
+const log = getLogger();
 
 // Middleware to log request performance
 export default function performanceMiddleware(req, res, next) {
@@ -7,8 +11,13 @@ export default function performanceMiddleware(req, res, next) {
     res.on('finish', () => {
         const end = performance.now();
         const duration = end - req.startTime;
-        console.log(
-            `Request to ${req.method} ${req.url} took ${duration.toFixed(3)} ms`
+        log.info(
+            chalk.white('PERF - request ') +
+                chalk.yellow(req.method) +
+                ' ' +
+                chalk.yellow(req.url) +
+                chalk.white(' took ') +
+                chalk.blue(duration.toFixed(3) + ' ms')
         );
     });
 

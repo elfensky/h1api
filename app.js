@@ -2,14 +2,12 @@
 // import './middleware/sentry.js'; // Sentry instrumentation
 // logs, monitoring, etc
 import * as Sentry from '@sentry/node';
-// import pinoHttp from 'pino-http';
 import getLogger, { getStream } from './utilities/logger.js';
 import chalk from 'chalk';
 //dependencies
 // import dotenv from 'dotenv';
 import express from 'express';
 import { CronJob } from 'cron';
-
 // documentation
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
@@ -35,9 +33,8 @@ app.use(express.static('public')); // set the static files location to /public, 
 app.set('view engine', 'pug'); // set the view engine to pug
 
 // MIDDLEWARE
-// app.use(performanceMiddleware); // performance middleware
+app.use(performanceMiddleware); // performance middleware
 // app.use(umamiMiddleware); // umami middleware
-// app.use(pinoHttp(getStream())); // pino-http logging middleware
 // DOCUMENTATION
 const swaggerDefinition = {
     openapi: '3.0.0',
@@ -116,19 +113,19 @@ app.get('/v1/timestamps', async (req, res) => {
 
 async function main() {
     await configureDB(); // check if WAL mode is enabled, and enable if not
-    updateApiData();
-    // start express server
+    // updateApiData();
 
+    // start express server
     app.listen(port, () => {
-        const getDataFromAPI = new CronJob(
-            '* * * * *',
-            () => {
-                updateApiData();
-            },
-            null, // No onComplete function
-            true, // Start the job right now)
-            'Europe/Brussels' // Time zone);
-        );
+        // const getDataFromAPI = new CronJob(
+        //     '* * * * *',
+        //     () => {
+        //         updateApiData();
+        //     },
+        //     null, // No onComplete function
+        //     true, // Start the job right now)
+        //     'Europe/Brussels' // Time zone);
+        // );
 
         log.info(
             'APP - Express is running on ' +

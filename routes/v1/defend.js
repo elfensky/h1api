@@ -3,7 +3,6 @@ import { performance } from 'perf_hooks';
 //components
 import getDefendEvent from '../../prisma/functions/getDefendEvent.js'; //db
 import getInfo from '../../utilities/info.js';
-import json from '../../utilities/json.js';
 //setup
 const router = express.Router();
 
@@ -73,20 +72,17 @@ const router = express.Router();
  *                   example: Internal Server Error
  */
 router.get('/v1/defend', async (req, res) => {
-    const start = performance.now();
     try {
         const data = await getDefendEvent();
         if (!data) {
             throw new Error('failed getDefendEvent()');
         } else {
             if (data.status !== 'active') {
-                const info = getInfo(start, 404);
+                const info = getInfo(req.startTime, 404);
                 res.status(info.code).json({ info, data });
-                // res.status(info.code).send(json({ info, data }));
             } else {
-                const info = getInfo(start, 200);
+                const info = getInfo(req.startTime, 200);
                 res.status(info.code).json({ info, data });
-                // res.status(info.code).send(json({ info, data }));
             }
         }
     } catch (error) {

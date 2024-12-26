@@ -3,7 +3,6 @@ import { performance } from 'perf_hooks';
 // components
 import getRebroadcast from '../../prisma/functions/getRebroadcast.js'; //db
 import getInfo from '../../utilities/info.js';
-import json from '../../utilities/json.js';
 // setup
 const router = express.Router();
 
@@ -48,13 +47,9 @@ router.get('/v1/rebroadcast', async (req, res) => {
     const start = performance.now();
     try {
         const data = await getRebroadcast();
-
         if (!data) {
             throw new Error('failed getDefendEvent()');
         } else {
-            // const info = getInfo(start, 200);
-            // res.setHeader('Content-Type', 'application/json');
-            // res.status(info.code).send(json({ info, data }));
             res.json(data);
         }
     } catch (error) {

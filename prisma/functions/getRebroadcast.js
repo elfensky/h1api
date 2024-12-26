@@ -9,8 +9,10 @@ export default async function getRebroadcast() {
     });
 
     if (!latestTimestamp) {
-        throw new Error('No timestamp found in database.');
+        throw new Error('No timestamps found in database.');
     }
+
+    const epoch = Math.floor(latestTimestamp.timestamp.getTime() / 1000);
 
     // Get all CampaignStatus records for the latest timestamp
     const campaignStatus = await prisma.campaignStatus.findMany({
@@ -90,6 +92,7 @@ export default async function getRebroadcast() {
             hits: true,
         },
     });
+
     const statistics = statisticsBigInt.map((stat) => {
         const convertedStat = {};
         for (const [key, value] of Object.entries(stat)) {
@@ -106,7 +109,7 @@ export default async function getRebroadcast() {
 
     // Generate response object
     const response = {
-        time: latestTimestamp.timestamp,
+        time: epoch,
         error_code: 0,
         campaign_status: campaignStatus,
         defend_event: defendEvents,
