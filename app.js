@@ -79,7 +79,7 @@ const swaggerOptions = {
     apis: ['./routes/**/*.js'], // Adjust the path according to your project structure
 };
 const swaggerSpec = swaggerJsdoc(swaggerOptions); // Initialize swagger-jsdoc
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec)); // create swagger route
+app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerSpec)); // create swagger route
 
 // const swaggerTemplate = fs.readFileSync(
 //     path.join('.', 'views', 'swagger.html'),
@@ -110,9 +110,9 @@ async function main() {
             '* * * * *',
             () => {
                 // Capture the start of the check-in
-                const checkInId = Sentry.captureCheckIn(
+                const sentry_updateApiData = Sentry.captureCheckIn(
                     {
-                        monitorSlug: 'updateApiData',
+                        monitorSlug: 'update-api-data',
                         status: 'in_progress',
                     },
                     {
@@ -131,8 +131,8 @@ async function main() {
 
                     // Capture the successful completion of the check-in
                     Sentry.captureCheckIn({
-                        checkInId,
-                        monitorSlug: 'updateApiData',
+                        sentry_updateApiData,
+                        monitorSlug: 'update-api-data',
                         status: 'ok',
                     });
                 } catch (error) {
@@ -140,8 +140,8 @@ async function main() {
                     Sentry.captureException(error);
 
                     Sentry.captureCheckIn({
-                        checkInId,
-                        monitorSlug: 'updateApiData',
+                        sentry_updateApiData,
+                        monitorSlug: 'update-api-data',
                         status: 'error',
                     });
                 }
@@ -151,23 +151,24 @@ async function main() {
             'Europe/Brussels' // Time zone);
         );
 
-        const CronJobWithCheckIn = Sentry.cron.instrumentCron(
-            CronJob,
-            'updateApiData'
-        );
+        // const CronJobWithCheckIn = Sentry.cron.instrumentCron(
+        //     CronJob,
+        //     'updateApiData'
+        // );
 
-        const job = new CronJobWithCheckIn('* * * * *', () => {
-            updateApiData();
-        });
+        // const job = new CronJobWithCheckIn('* * * * *', () => {
+        //     updateApiData();
+        // });
 
+        log.info('APP - express is running');
         log.info(
-            'APP - Express is running on ' +
+            'APP - documentation is available at ' +
                 chalk.yellow.underline.underline('http://127.0.0.1:' + port)
         );
         log.info(
-            'APP - Swagger docs are available at ' +
+            'APP - api is available at ' +
                 chalk.yellow.underline.underline(
-                    'http://127.0.0.1:' + port + '/docs'
+                    'http://127.0.0.1:' + port + '/v1/...'
                 )
         );
     });

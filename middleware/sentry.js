@@ -3,20 +3,20 @@ import * as Sentry from '@sentry/node';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
 
 dotenv.config();
-const release = 'helldivers1api@' + process.env.npm_package_version;
 
 if (!process.env.SENTRY_DSN) {
     throw new Error('SENTRY_DSN is not set');
 }
 
+const release = 'helldivers1api@' + process.env.npm_package_version;
+const environment = process.env.NODE_ENV || 'development';
+
 // Ensure to call this before importing any other modules!
 Sentry.init({
     dsn: process.env.SENTRY_DSN,
-    integrations: [
-        // Add our Profiling integration
-        nodeProfilingIntegration(),
-    ],
+    integrations: [nodeProfilingIntegration()],
     release: release,
+    environment: environment,
 
     // Add Tracing by setting tracesSampleRate
     // We recommend adjusting this value in production
