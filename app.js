@@ -11,13 +11,14 @@ import { CronJob } from 'cron';
 import fs from 'fs';
 import path from 'path';
 // documentation
+import { swaggerOptions } from './config/swagger.js';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 // middleware
 import performanceMiddleware from './middleware/performance.js';
 import umamiMiddleware from './middleware/umami.js';
 // utils
-import configureDB from './utilities/configureDB.js';
+import configureDB from './config/database.js';
 import fetchCampaignStatus from './utilities/fetchCampaignStatus.js';
 import updateApiData from './utilities/updateApiData.js';
 // routes
@@ -28,66 +29,16 @@ import cursors from './routes/v1/cursors.js';
 // INITIALIZE AND CONFIGURE APPLICATION
 const log = getLogger();
 log.info('Initializing application...');
-
 const app = express(); // create an express instance
 const port = 3000;
 Sentry.setupExpressErrorHandler(app);
-app.use(express.static('public')); // set the static files location to /public, so a reference to /img/logo.png will load /public/img/logo.png
+const swaggerSpec = swaggerJsdoc(swaggerOptions()); // Initialize swagger-jsdoc
 app.set('view engine', 'pug'); // set the view engine to pug
 
 // MIDDLEWARE
 app.use(performanceMiddleware); // performance middleware
-// app.use(umamiMiddleware); // umami middleware
-// DOCUMENTATION
-const swaggerDefinition = {
-    openapi: '3.0.0',
-    info: {
-        title: 'Helldivers I',
-        version: '0.7.0',
-        description: 'A description of your API',
-    },
-    servers: [
-        {
-            url: 'https://api.helldivers.bot',
-            description: 'Production server',
-        },
-        // {
-        //     url: 'http://127.0.0.1:3000',
-        //     description: 'Local Development server',
-        // },
-    ],
-    tags: [
-        {
-            name: 'API',
-            description: 'API related endpoints',
-        },
-        {
-            name: 'HTML',
-            description: 'HTML related endpoints',
-        },
-        {
-            name: 'Cursors',
-            description: 'Historic data that supports cursor-based pagination',
-        },
-    ],
-};
-
-const swaggerOptions = {
-    // Options for the swagger docs
-    swaggerDefinition,
-    // Path to the API docs
-    apis: ['./routes/**/*.js'], // Adjust the path according to your project structure
-};
-const swaggerSpec = swaggerJsdoc(swaggerOptions); // Initialize swagger-jsdoc
-app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerSpec)); // create swagger route
-
-// const swaggerTemplate = fs.readFileSync(
-//     path.join('.', 'views', 'swagger.html'),
-//     'utf-8'
-// );
-// app.use('/docs', swaggerUi.serve, (req, res, next) => {
-//     res.send(swaggerTemplate);
-// });
+app.use(express.static('public')); // set the static files location to /public, so a reference to /img/logo.png will load /public/img/logo.png
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec)); // create swagger route
 
 // ROUTES - API
 app.use(rebroadcastRoute); //v1/rebroadcast
@@ -96,8 +47,12 @@ app.use(cursors); //v1/timestamps, v1/campaign, v1/defend, v1/attack, v1/statist
 
 // ROUTES - HTML
 app.get('/html-pug', (req, res) => {
-    // res.send("Hello World!");
     res.render('index', { title: 'Hey', message: 'Hello there!' });
+});
+
+// ROUTES - REDIRECTS
+app.get('/', (req, res) => {
+    res.redirect('/docs');
 });
 
 async function main() {
@@ -162,15 +117,17 @@ async function main() {
 
         log.info('APP - express is running');
         log.info(
-            'APP - documentation is available at ' +
-                chalk.yellow.underline.underline('http://127.0.0.1:' + port)
-        );
-        log.info(
-            'APP - api is available at ' +
+            'APP - swagger documentation is available at ' +
                 chalk.yellow.underline.underline(
-                    'http://127.0.0.1:' + port + '/v1/...'
+                    'http://127.0.0.1:' + port + '/docs'
                 )
         );
+        // log.info(
+        //     'APP - api is available at ' +
+        //         chalk.yellow.underline.underline(
+        //             'http://127.0.0.1:' + port + '/v1/...'
+        //         )
+        // );
     });
 }
 

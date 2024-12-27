@@ -77,6 +77,25 @@ router.get('/v1/event', async (req, res) => {
         if (!data) {
             throw new Error('failed getDefendEvent()');
         } else {
+            // const testData = {
+            //     info: {
+            //         ms: 45.153,
+            //         code: 200,
+            //         status: 'OK',
+            //     },
+            //     data: {
+            //         season: 143,
+            //         event_id: 4305,
+            //         start_time: 1735240000,
+            //         end_time: 1735398000,
+            //         region: 5,
+            //         enemy: 1,
+            //         points_max: 100,
+            //         points: 100,
+            //         status: 'success',
+            //     },
+            // };
+            // res.json(testData);
             const info = getInfo(req.startTime, 200);
             res.status(info.code).json({ info, data });
         }
