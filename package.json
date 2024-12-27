@@ -24,7 +24,8 @@
     "main": "app.js",
     "scripts": {
         "dev": "nodemon --import ./middleware/sentry.js app.js",
-        "start": "NODE_ENV=production node --import ./middleware/sentry.js app.js"
+        "start": "NODE_ENV=production node --import ./middleware/sentry.js app.js",
+        "umami": "nodemon umami.js"
     },
     "dependencies": {
         "@prisma/client": "^6.1.0",

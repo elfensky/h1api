@@ -81,8 +81,8 @@ async function runMigrations() {
             throw new Error(stderr);
         }
 
-        // const cleanedStdout = stdout.replace(/(\r?\n){3,}/g, '\n');
-        // log.info('\n' + cleanedStdout);
+        const cleanedStdout = stdout.replace(/(\r?\n){3,}/g, '\n');
+        log.info('\n' + cleanedStdout);
         log.info('DATABASE - finished migrations');
     } catch (error) {
         log.error('DATABASE - failed migrations \n' + error);

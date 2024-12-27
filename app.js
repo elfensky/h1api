@@ -8,6 +8,8 @@ import chalk from 'chalk';
 // import dotenv from 'dotenv';
 import express from 'express';
 import { CronJob } from 'cron';
+import fs from 'fs';
+import path from 'path';
 // documentation
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
@@ -69,6 +71,7 @@ const swaggerDefinition = {
         },
     ],
 };
+
 const swaggerOptions = {
     // Options for the swagger docs
     swaggerDefinition,
@@ -77,6 +80,14 @@ const swaggerOptions = {
 };
 const swaggerSpec = swaggerJsdoc(swaggerOptions); // Initialize swagger-jsdoc
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec)); // create swagger route
+
+// const swaggerTemplate = fs.readFileSync(
+//     path.join('.', 'views', 'swagger.html'),
+//     'utf-8'
+// );
+// app.use('/docs', swaggerUi.serve, (req, res, next) => {
+//     res.send(swaggerTemplate);
+// });
 
 // ROUTES - API
 app.use(rebroadcastRoute); //v1/rebroadcast
@@ -98,12 +109,56 @@ async function main() {
         const getDataFromAPI = new CronJob(
             '* * * * *',
             () => {
-                updateApiData();
+                // Capture the start of the check-in
+                const checkInId = Sentry.captureCheckIn(
+                    {
+                        monitorSlug: 'updateApiData',
+                        status: 'in_progress',
+                    },
+                    {
+                        schedule: {
+                            type: 'crontab',
+                            value: '* * * * *',
+                        },
+                        checkinMargin: 1,
+                        maxRuntime: 1,
+                        timezone: 'Europe/Brussels',
+                    }
+                );
+
+                try {
+                    updateApiData(); // Your function to update API data
+
+                    // Capture the successful completion of the check-in
+                    Sentry.captureCheckIn({
+                        checkInId,
+                        monitorSlug: 'updateApiData',
+                        status: 'ok',
+                    });
+                } catch (error) {
+                    // If there's an error, capture it and update the check-in status to 'error'
+                    Sentry.captureException(error);
+
+                    Sentry.captureCheckIn({
+                        checkInId,
+                        monitorSlug: 'updateApiData',
+                        status: 'error',
+                    });
+                }
             },
             null, // No onComplete function
             true, // Start the job right now)
             'Europe/Brussels' // Time zone);
         );
+
+        const CronJobWithCheckIn = Sentry.cron.instrumentCron(
+            CronJob,
+            'updateApiData'
+        );
+
+        const job = new CronJobWithCheckIn('* * * * *', () => {
+            updateApiData();
+        });
 
         log.info(
             'APP - Express is running on ' +

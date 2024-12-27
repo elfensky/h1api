@@ -77,13 +77,8 @@ router.get('/v1/event', async (req, res) => {
         if (!data) {
             throw new Error('failed getDefendEvent()');
         } else {
-            if (data.status !== 'active') {
-                const info = getInfo(req.startTime, 404);
-                res.status(info.code).json({ info, data });
-            } else {
-                const info = getInfo(req.startTime, 200);
-                res.status(info.code).json({ info, data });
-            }
+            const info = getInfo(req.startTime, 404);
+            res.status(info.code).json({ info, data });
         }
     } catch (error) {
         console.error('Error fetching campaign data:', error);
