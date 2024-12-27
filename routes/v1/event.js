@@ -77,7 +77,7 @@ router.get('/v1/event', async (req, res) => {
         if (!data) {
             throw new Error('failed getDefendEvent()');
         } else {
-            const info = getInfo(req.startTime, 404);
+            const info = getInfo(req.startTime, 200);
             res.status(info.code).json({ info, data });
         }
     } catch (error) {
