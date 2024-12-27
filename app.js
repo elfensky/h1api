@@ -57,63 +57,18 @@ app.get('/', (req, res) => {
 
 async function main() {
     await configureDB(); // check if WAL mode is enabled, and enable if not
-    // updateApiData();
 
     // start express server
     app.listen(port, () => {
         const getDataFromAPI = new CronJob(
             '* * * * *',
             () => {
-                // Capture the start of the check-in
-                const sentry_updateApiData = Sentry.captureCheckIn(
-                    {
-                        monitorSlug: 'update-api-data',
-                        status: 'in_progress',
-                    },
-                    {
-                        schedule: {
-                            type: 'crontab',
-                            value: '* * * * *',
-                        },
-                        checkinMargin: 1,
-                        maxRuntime: 1,
-                        timezone: 'Europe/Brussels',
-                    }
-                );
-
-                try {
-                    updateApiData(); // Your function to update API data
-
-                    // Capture the successful completion of the check-in
-                    Sentry.captureCheckIn({
-                        sentry_updateApiData,
-                        monitorSlug: 'update-api-data',
-                        status: 'ok',
-                    });
-                } catch (error) {
-                    // If there's an error, capture it and update the check-in status to 'error'
-                    Sentry.captureException(error);
-
-                    Sentry.captureCheckIn({
-                        sentry_updateApiData,
-                        monitorSlug: 'update-api-data',
-                        status: 'error',
-                    });
-                }
+                updateApiData(); // Your function to update API data
             },
             null, // No onComplete function
             true, // Start the job right now)
             'Europe/Brussels' // Time zone);
         );
-
-        // const CronJobWithCheckIn = Sentry.cron.instrumentCron(
-        //     CronJob,
-        //     'updateApiData'
-        // );
-
-        // const job = new CronJobWithCheckIn('* * * * *', () => {
-        //     updateApiData();
-        // });
 
         log.info('APP - express is running');
         log.info(
@@ -122,12 +77,6 @@ async function main() {
                     'http://127.0.0.1:' + port + '/docs'
                 )
         );
-        // log.info(
-        //     'APP - api is available at ' +
-        //         chalk.yellow.underline.underline(
-        //             'http://127.0.0.1:' + port + '/v1/...'
-        //         )
-        // );
     });
 }
 
