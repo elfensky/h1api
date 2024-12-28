@@ -1,10 +1,8 @@
 name: Automate Release
-# on:
-#     push:
-#         tags:
-#             - '*.*.*' # Triggers on version tags like v1.0.0
 on:
-    workflow_dispatch:
+    push:
+        tags:
+            - '*.*.*' # Triggers on version tags like v1.0.0
 jobs:
     build:
         runs-on: ubuntu-latest
