@@ -36,7 +36,7 @@ jobs:
               with:
                   files: CHANGELOG.md
                   body_path: CHANGELOG.md
-                  token: ${{ secrets.GITHUB_TOKEN }}
+                  token: ${{ secrets.ACCESS_TOKEN }}
 
             #   with:
             #       tag_name: ${{ github.ref_name }}
