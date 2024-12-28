@@ -1,10 +1,9 @@
 name: Automate Release
-# on:
-#     push:
-#         tags:
-#             - '*.*.*' # Triggers on version tags like v1.0.0
 on:
-    workflow_dispatch:
+    push:
+        tags:
+            - '*.*.*' # Triggers on version tags like v1.0.0
+
 jobs:
     build:
         runs-on: ubuntu-latest
@@ -34,15 +33,18 @@ jobs:
                       ghcr.io/${{ github.repository_owner }}/h1api:latest
 
             - name: Create GitHub Release
-              uses: actions/create-release@v1
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              uses: softprops/action-gh-release@v2
               with:
-                  tag_name: ${{ github.ref_name }}
-                  release_name: Release ${{ github.ref_name }}
-                  body: |
-                      Docker image available at:
-                      - `ghcr.io/${{ github.repository_owner }}/h1api:${{ github.ref_name }}`
-                      - `ghcr.io/${{ github.repository_owner }}/h1api:latest`
-                  draft: false
-                  prerelease: false
+                  files: CHANGELOG.md
+                  body_path: CHANGELOG.md
+                  token: ${{ secrets.GITHUB_TOKEN }}
+
+            #   with:
+            #       tag_name: ${{ github.ref_name }}
+            #       name: Release ${{ github.ref_name }}
+            #       body: |
+            #           Docker image available at:
+            #           - `ghcr.io/${{ github.repository_owner }}/h1api:${{ github.ref_name }}`
+            #           - `ghcr.io/${{ github.repository_owner }}/h1api:latest`
+            #   env:
+            #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
