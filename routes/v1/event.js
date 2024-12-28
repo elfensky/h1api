@@ -92,7 +92,7 @@ router.get('/v1/event', async (req, res) => {
             //         enemy: 1,
             //         points_max: 100,
             //         points: 100,
-            //         status: 'success',
+            //         status: 'success', // active, success, failure
             //     },
             // };
             // res.json(testData);
