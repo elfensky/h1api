@@ -61,7 +61,7 @@ async function main() {
     // start express server
     app.listen(port, () => {
         const getDataFromAPI = new CronJob(
-            '* * * * *',
+            '*/15 * * * * *',
             () => {
                 updateApiData(); // Your function to update API data
             },

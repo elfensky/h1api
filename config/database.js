@@ -40,11 +40,16 @@ export default async function configureDB() {
     }
 
     if (provider === 'mysql') {
-        log.info('DATABASE - using ' + chalk.yellow('mysql') + ' provider');
+        log.info(
+            'DATABASE' +
+                chalk.white(' - using ') +
+                chalk.yellow('mysql') +
+                chalk.white(' provider')
+        );
 
         // migrate the database if needed
         await runMigrations();
-        log.info('DATABASE - completed configuration');
+        log.info('DATABASE' + chalk.white(' - completed configuration'));
         return true;
     }
 
@@ -74,7 +79,8 @@ function getPrismaProvider() {
 }
 
 async function runMigrations() {
-    log.info('DATABASE - starting migrations...');
+    const start = performance.now();
+    log.info('DATABASE' + chalk.white(' - starting migrations...'));
     try {
         const { stdout, stderr } = await execAsync(`npx prisma migrate deploy`);
         if (stderr) {
@@ -83,7 +89,11 @@ async function runMigrations() {
 
         const cleanedStdout = stdout.replace(/(\r?\n){3,}/g, '\n');
         log.info('\n' + cleanedStdout);
-        log.info('DATABASE - finished migrations');
+        log.info(
+            'DATABASE' +
+                chalk.white(' - finished migrations in ') +
+                chalk.blue((performance.now() - start).toFixed(3) + ' ms')
+        );
     } catch (error) {
         log.error('DATABASE - failed migrations \n' + error);
         throw error;

@@ -14,10 +14,17 @@ import chalk from 'chalk';
 const log = getLogger();
 
 export default async function updateApiData() {
+    const start = performance.now();
     const data = await fetchCampaignStatus();
 
     if (data) {
-        const start = performance.now();
+        const message =
+            chalk.white('UPDATE - ') +
+            chalk.yellow('GET https://api.helldiversgame.com/1.0/') +
+            chalk.white(' took ') +
+            chalk.blue((performance.now() - start).toFixed(3) + ' ms');
+        log.info(message);
+
         const timestamp = await saveTimestamp(data);
         const epoch = Math.floor(timestamp.timestamp.getTime() / 1000);
 
@@ -39,7 +46,7 @@ export default async function updateApiData() {
             if (verify(data, response)) {
                 const duration = performance.now() - start;
                 log.info(
-                    chalk.green('SUCCESS in ') +
+                    chalk.green('UPDATE - SUCCESS in ') +
                         chalk.blue(duration.toFixed(3)) +
                         chalk.green(' ms')
                 );
