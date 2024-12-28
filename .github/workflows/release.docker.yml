@@ -21,7 +21,7 @@ jobs:
               with:
                   registry: ghcr.io
                   username: ${{ github.actor }}
-                  password: ${{ secrets.ACCESS_TOKEN }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Build and push Docker image
               uses: docker/build-push-action@v4
@@ -35,6 +35,8 @@ jobs:
 
             - name: Create GitHub Release
               uses: actions/create-release@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               with:
                   tag_name: ${{ github.ref_name }}
                   release_name: Release ${{ github.ref_name }}
