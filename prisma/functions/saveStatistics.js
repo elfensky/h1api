@@ -1,6 +1,6 @@
 import prisma from '../prisma.js';
 // logs, monitoring, etc
-import getLogger from '../../utilities/logger.js';
+import { getLogger } from '../../utilities/loggers.js';
 import chalk from 'chalk';
 const log = getLogger();
 

@@ -7,7 +7,7 @@ const router = express.Router();
  * /map:
  *   get:
  *     tags:
- *       - HTML
+ *       - Data
  *     summary: TODO - Retrieve the Galactic map as a png
  *     description: generates, renders and serves the Galactic Map used in h1stats as a png.
  *     responses:

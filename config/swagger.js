@@ -21,29 +21,35 @@ export function swaggerDefinition() {
             title: 'Helldivers I',
             version: process.env.npm_package_version,
             description:
-                "This serves as a cache for the official Helldivers' API to prevent overload and stores historical campaign data for statistics and predictions",
+                "This serves as a (3rd party) cache and historic data store for the official Helldivers' API to prevent overload.",
         },
         servers: [server],
         tags: [
             {
-                name: 'API',
-                description: 'API related endpoints',
+                name: 'Rebroadcast',
+                description:
+                    'A drop in replacement for the official API that mimics its behavior and returns the same data.',
             },
             {
-                name: 'HTML',
-                description: 'HTML related endpoints',
+                name: 'Bot',
+                description:
+                    'Special endpoints used by the helldivers discord bot',
             },
             {
                 name: 'Cursors',
                 description:
                     'Historic data that supports cursor-based pagination',
             },
+            {
+                name: 'Data',
+                description: '(TODO) File and HTML related endpoints',
+            },
         ],
     };
 }
 
 export function swaggerRoutes() {
-    const routes = ['./routes/**/*.js'];
+    const routes = ['./routes/v1/**/*.js'];
     return routes;
 }
 

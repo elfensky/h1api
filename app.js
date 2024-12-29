@@ -1,15 +1,14 @@
 'use strict';
-// import './middleware/sentry.js'; // Sentry instrumentation
 // logs, monitoring, etc
 import * as Sentry from '@sentry/node';
-import getLogger, { getStream } from './utilities/logger.js';
+import { getLogger, getStream } from './utilities/loggers.js';
 import chalk from 'chalk';
 //dependencies
-// import dotenv from 'dotenv';
 import express from 'express';
+import prisma from './prisma/prisma.js';
 import { CronJob } from 'cron';
-import fs from 'fs';
 import path from 'path';
+import fs from 'fs';
 // documentation
 import { swaggerOptions } from './config/swagger.js';
 import swaggerJsdoc from 'swagger-jsdoc';
@@ -17,14 +16,15 @@ import swaggerUi from 'swagger-ui-express';
 // middleware
 import performanceMiddleware from './middleware/performance.js';
 import umamiMiddleware from './middleware/umami.js';
+// updates
+import updateCampaignStatus from './updates/updateCampaignStatus.js';
+import updateSeason from './updates/updateSeason.js';
 // utils
 import configureDB from './config/database.js';
-import fetchCampaignStatus from './utilities/fetchCampaignStatus.js';
-import updateApiData from './utilities/updateApiData.js';
 // routes
-import rebroadcastRoute from './routes/v1/rebroadcast.js';
-import event from './routes/v1/event.js';
-import cursors from './routes/v1/cursors.js';
+import rebroadcastRouter from './routes/api/rebroadcast.js';
+import botRouter from './routes/api/bot.js';
+import cursorRouter from './routes/api/cursor.js';
 
 // INITIALIZE AND CONFIGURE APPLICATION
 const log = getLogger();
@@ -32,18 +32,19 @@ log.info('Initializing application...');
 const app = express(); // create an express instance
 const port = 3000;
 Sentry.setupExpressErrorHandler(app);
-const swaggerSpec = swaggerJsdoc(swaggerOptions()); // Initialize swagger-jsdoc
 app.set('view engine', 'pug'); // set the view engine to pug
+const swaggerSpec = swaggerJsdoc(swaggerOptions()); // Initialize swagger-jsdoc
 
 // MIDDLEWARE
 app.use(performanceMiddleware); // performance middleware
+app.use(express.urlencoded({ extended: true })); // parse application/x-www-form-urlencoded
 app.use(express.static('public')); // set the static files location to /public, so a reference to /img/logo.png will load /public/img/logo.png
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec)); // create swagger route
 
 // ROUTES - API
-app.use(rebroadcastRoute); //v1/rebroadcast
-app.use(event); //v1/event
-app.use(cursors); //v1/timestamps, v1/campaign, v1/defend, v1/attack, v1/statistics
+app.use(rebroadcastRouter); //v1/rebroadcast
+app.use('/bot', botRouter); //v1/bot/defend, v1/bot/attack, v1/bot/statistics
+app.use('/cursor', cursorRouter); //v1/timestamps, v1/campaign, v1/defend, v1/attack, v1/statistics
 
 // ROUTES - HTML
 app.get('/html-pug', (req, res) => {
@@ -58,18 +59,20 @@ app.get('/', (req, res) => {
 async function main() {
     await configureDB(); // check if WAL mode is enabled, and enable if not
 
+    // await updateCampaignStatus();
+    await updateSeason(142);
+
     // start express server
     app.listen(port, () => {
-        const getDataFromAPI = new CronJob(
-            '*/15 * * * * *',
-            () => {
-                updateApiData(); // Your function to update API data
-            },
-            null, // No onComplete function
-            true, // Start the job right now)
-            'Europe/Brussels' // Time zone);
-        );
-
+        // const getDataFromAPI = new CronJob(
+        //     '*/15 * * * * *',
+        //     () => {
+        //         updateCampaignStatus(); // Your function to update API data
+        //     },
+        //     null, // No onComplete function
+        //     true, // Start the job right now)
+        //     'Europe/Brussels' // Time zone);
+        // );
         log.info('APP - express is running');
         log.info(
             'APP - swagger documentation is available at ' +

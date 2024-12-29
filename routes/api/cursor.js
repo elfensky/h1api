@@ -3,7 +3,7 @@ import express from 'express';
 import prisma from '../../prisma/prisma.js';
 import getInfo from '../../utilities/info.js';
 import isValidUUIDv7 from '../../utilities/isValidUUIDv7.js';
-import HttpError from '../../utilities/HttpError.js';
+import { HttpCodeError } from '../../utilities/errors.js';
 // setup
 const router = express.Router();
 
@@ -80,19 +80,22 @@ const router = express.Router();
  *                   type: string
  *                   description: Error message
  */
-router.get('/v1/timestamps', async (req, res) => {
+router.get('/timestamps', async (req, res) => {
     const cursor = req.query.cursor || null; //
     const limit = parseInt(req.query.limit) || null;
 
     try {
         if (cursor !== null) {
             if (!isValidUUIDv7(cursor)) {
-                throw new HttpError('if present, cursor must be a UUIDv7', 400);
+                throw new HttpCodeError(
+                    'if present, cursor must be a UUIDv7',
+                    400
+                );
             }
         }
 
         if (typeof limit !== 'number' || limit < 1) {
-            throw new HttpError('limit must be a positive integer', 400);
+            throw new HttpCodeError('limit must be a positive integer', 400);
         }
 
         // throw new Error('getTimestamps() not implemented');
@@ -113,7 +116,8 @@ router.get('/v1/timestamps', async (req, res) => {
         const info = getInfo(req.startTime, 200, next, total);
         res.json({ info, data: timestamps });
     } catch (error) {
-        const statusCode = error instanceof HttpError ? error.statusCode : 500;
+        const statusCode =
+            error instanceof HttpCodeError ? error.statusCode : 500;
         const info = getInfo(req.startTime, statusCode);
         res.status(statusCode).json({ info, error: error.message });
         throw error;
@@ -211,19 +215,22 @@ router.get('/v1/timestamps', async (req, res) => {
  *                   type: string
  *                   description: Error message
  */
-router.get('/v1/campaigns', async (req, res) => {
+router.get('/campaigns', async (req, res) => {
     const cursor = req.query.cursor || null; //
     const limit = parseInt(req.query.limit) || 10;
 
     try {
         if (cursor !== null) {
             if (!isValidUUIDv7(cursor)) {
-                throw new HttpError('if present, cursor must be a UUIDv7', 400);
+                throw new HttpCodeError(
+                    'if present, cursor must be a UUIDv7',
+                    400
+                );
             }
         }
 
         if (typeof limit !== 'number' || limit < 1) {
-            throw new HttpError('limit must be a positive integer', 400);
+            throw new HttpCodeError('limit must be a positive integer', 400);
         }
 
         const campaigns = await prisma.campaignStatus.findMany({
@@ -347,19 +354,22 @@ router.get('/v1/campaigns', async (req, res) => {
  *                   type: string
  *                   description: Error message
  */
-router.get('/v1/defences', async (req, res) => {
+router.get('/defences', async (req, res) => {
     const cursor = req.query.cursor || null; //
     const limit = parseInt(req.query.limit) || 10;
 
     try {
         if (cursor !== null) {
             if (!isValidUUIDv7(cursor)) {
-                throw new HttpError('if present, cursor must be a UUIDv7', 400);
+                throw new HttpCodeError(
+                    'if present, cursor must be a UUIDv7',
+                    400
+                );
             }
         }
 
         if (typeof limit !== 'number' || limit < 1) {
-            throw new HttpError('limit must be a positive integer', 400);
+            throw new HttpCodeError('limit must be a positive integer', 400);
         }
 
         const defences = await prisma.defendEvent.findMany({
@@ -484,19 +494,22 @@ router.get('/v1/defences', async (req, res) => {
  *                   type: string
  *                   description: Error message
  */
-router.get('/v1/attacks', async (req, res) => {
+router.get('/attacks', async (req, res) => {
     const cursor = req.query.cursor || null; //
     const limit = parseInt(req.query.limit) || 10;
 
     try {
         if (cursor !== null) {
             if (!isValidUUIDv7(cursor)) {
-                throw new HttpError('if present, cursor must be a UUIDv7', 400);
+                throw new HttpCodeError(
+                    'if present, cursor must be a UUIDv7',
+                    400
+                );
             }
         }
 
         if (typeof limit !== 'number' || limit < 1) {
-            throw new HttpError('limit must be a positive integer', 400);
+            throw new HttpCodeError('limit must be a positive integer', 400);
         }
 
         const attacks = await prisma.attackEvent.findMany({
@@ -645,19 +658,22 @@ router.get('/v1/attacks', async (req, res) => {
  *                   type: string
  *                   description: Error message
  */
-router.get('/v1/statistics', async (req, res) => {
+router.get('/statistics', async (req, res) => {
     const cursor = req.query.cursor || null; //
     const limit = parseInt(req.query.limit) || 10;
 
     try {
         if (cursor !== null) {
             if (!isValidUUIDv7(cursor)) {
-                throw new HttpError('if present, cursor must be a UUIDv7', 400);
+                throw new HttpCodeError(
+                    'if present, cursor must be a UUIDv7',
+                    400
+                );
             }
         }
 
         if (typeof limit !== 'number' || limit < 1) {
-            throw new HttpError('limit must be a positive integer', 400);
+            throw new HttpCodeError('limit must be a positive integer', 400);
         }
 
         const statistics = await prisma.statistic.findMany({

@@ -24,7 +24,7 @@ export function getStream() {
 }
 
 let loggerInstance;
-function getLogger() {
+export function getLogger() {
     // Create a singleton instance of Pino
     if (!loggerInstance) {
         loggerInstance = pino(getStream());
@@ -32,4 +32,14 @@ function getLogger() {
     return loggerInstance;
 }
 
-export default getLogger;
+export function logError(error) {
+    const message = chalk.red(
+        'in ' +
+            chalk.magenta(error.cause) +
+            ' of ' +
+            chalk.magenta(error.name) +
+            ' type. ' +
+            chalk.red(error.message)
+    );
+    return message;
+}

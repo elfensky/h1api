@@ -1,7 +1,7 @@
 import { performance } from 'perf_hooks';
 import axios from 'axios';
 // logs, monitoring, etc
-import getLogger from '../utilities/logger.js';
+import { getLogger } from '../utilities/loggers.js';
 import chalk from 'chalk';
 const log = getLogger();
 

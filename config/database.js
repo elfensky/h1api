@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import prisma from '../prisma/prisma.js';
-import getLogger from '../utilities/logger.js';
+import { getLogger } from '../utilities/loggers.js';
 import chalk from 'chalk';
 
 const log = getLogger();

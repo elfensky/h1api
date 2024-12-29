@@ -8,12 +8,12 @@ const router = express.Router();
 
 /**
  * @swagger
- * /v1/event:
+ * /bot/defend:
  *   get:
  *     summary: Retrieve latest defend event.
  *     description: Fetches the latest defend event information from the database and returns it as JSON.
  *     tags:
- *       - API
+ *       - Bot
  *     responses:
  *       200:
  *         description: A list of defend events
@@ -71,39 +71,50 @@ const router = express.Router();
  *                   type: string
  *                   example: Internal Server Error
  */
-router.get('/v1/event', async (req, res) => {
+router.get('/defend', async (req, res) => {
     try {
         const data = await getDefendEvent();
         if (!data) {
             throw new Error('failed getDefendEvent()');
         } else {
-            // const testData = {
-            //     info: {
-            //         ms: 45.153,
-            //         code: 200,
-            //         status: 'OK',
-            //     },
-            //     data: {
-            //         season: 143,
-            //         event_id: 4305,
-            //         start_time: 1735240000,
-            //         end_time: 1735398000,
-            //         region: 5,
-            //         enemy: 1,
-            //         points_max: 100,
-            //         points: 100,
-            //         status: 'success', // active, success, failure
-            //     },
-            // };
-            // res.json(testData);
-            const info = getInfo(req.startTime, 200);
-            res.status(info.code).json({ info, data });
+            const testData = {
+                info: {
+                    ms: 45.153,
+                    code: 200,
+                    status: 'OK',
+                },
+                data: {
+                    season: 143,
+                    event_id: 4247,
+                    start_time: 1735410602,
+                    end_time: 1735420602,
+                    region: 1,
+                    enemy: 2,
+                    points_max: 2000,
+                    points: 2000,
+                    status: 'success', // active, success, failure
+                },
+            };
+            res.json(testData);
+            // const info = getInfo(req.startTime, 200);
+            // res.status(info.code).json({ info, data });
         }
     } catch (error) {
         console.error('Error fetching campaign data:', error);
         const info = getInfo(req.startTime, 500);
         res.status(info.code).json({ info, error: error.message });
     }
+});
+
+router.get('/defend/:id', async (req, res) => {
+    console.log('/v1/bot/defend/' + req.params.id);
+    res.json({ api: '/defend/id', id: req.params.id });
+});
+
+router.get('/attack', async (req, res) => {
+    console.log('/v1/bot/attack');
+
+    res.json({ api: '/attack' });
 });
 
 export default router;
