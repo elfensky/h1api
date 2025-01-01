@@ -60,7 +60,7 @@ async function main() {
     await configureDB(); // check if WAL mode is enabled, and enable if not
 
     await updateStatus();
-    await updateSeason(143);
+    // await updateSeason(1);
 
     // start express server
     app.listen(port, () => {

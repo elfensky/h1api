@@ -7,7 +7,7 @@ import upsertStatus from '../prisma/func/upsertStatus.js';
 import upsertDefendEvent from '../prisma/func/upsertDefendEvent.js';
 import upsertAttackEvents from '../prisma/func/upsertAttackEvents.js';
 // helpers
-import { verify } from '../utilities/compare.js';
+import { verifyStatus } from '../utilities/compare.js';
 // logs, monitoring, etc
 import { performance } from 'perf_hooks';
 import { getLogger } from '../utilities/loggers.js';
@@ -220,11 +220,6 @@ export default async function updateStatus() {
 
             const newAttackEvents = await upsertAttackEvents(season, data);
 
-            // const newAttackEvents = await upsertAttackEvents(
-            //     newSeason.season,
-            //     data
-            // );
-
             if (!newStatus) {
                 throw new Error(`Failed upsert: newStatus is falsy`, {
                     cause: 'updates/updateStatus.js',
@@ -242,6 +237,32 @@ export default async function updateStatus() {
                     cause: 'updates/updateStatus.js',
                 });
             }
+
+            const response = {
+                time: newStatus.time,
+                error_code: 0,
+                campaign_status: newStatus.campaign_status,
+                defend_event: newStatus.defend_event,
+                attack_events: newStatus.attack_events,
+                statistics: newStatus.statistics,
+            };
+
+            if (verifyStatus(data, response, season)) {
+                const duration = performance.now() - start;
+
+                log.info(
+                    chalk.green(`(7/7) UPDATED STATUS in `) +
+                        chalk.blue(
+                            (performance.now() - start).toFixed(3) + ' ms\n'
+                        )
+                );
+            } else {
+                throw new Error('Mismatch between API and DB', {
+                    cause: 'updates/updateSeason.js',
+                });
+            }
+
+            return response;
         }
     } catch (error) {
         log.error(chalk.red('(1/2) in ') + chalk.magenta(error.cause));

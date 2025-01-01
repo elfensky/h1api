@@ -224,7 +224,7 @@ export default async function updateSeason(season) {
     const start = performance.now();
 
     try {
-        const data = await fetchSeasonTEST(season);
+        const data = await fetchSeason(season);
 
         if (!data) {
             throw new Error('No data available', {
@@ -266,6 +266,42 @@ export default async function updateSeason(season) {
                 newSeason.season,
                 data
             );
+
+            if (!newSeason) {
+                throw new Error(`Failed upsert: newSeason is falsy`, {
+                    cause: 'updates/updateSeason.js',
+                });
+            }
+
+            if (!newIntroOrder) {
+                throw new Error(`Failed upsert: newIntroOrder is falsy`, {
+                    cause: 'updates/updateSeason.js',
+                });
+            }
+
+            if (!newPointsMax) {
+                throw new Error(`Failed upsert: newPointsMax is falsy`, {
+                    cause: 'updates/updateSeason.js',
+                });
+            }
+
+            if (!newSnapshots) {
+                throw new Error(`Failed upsert: newSnapshots is falsy`, {
+                    cause: 'updates/updateSeason.js',
+                });
+            }
+
+            if (!newDefendEvents) {
+                throw new Error(`Failed upsert: newDefendEvents is falsy`, {
+                    cause: 'updates/updateSeason.js',
+                });
+            }
+
+            if (!newAttackEvents) {
+                throw new Error(`Failed upsert: newAttackEvents is falsy`, {
+                    cause: 'updates/updateSeason.js',
+                });
+            }
 
             const response = {
                 time: newSeason.time,

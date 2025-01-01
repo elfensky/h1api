@@ -218,9 +218,46 @@ export function verifySeason(apiData, dbData, season) {
     }
 
     log.info(
-        chalk.white(`(7/8) UPDATE SEASON `) +
+        chalk.white(`(7/8) VERIFY SEASON `) +
             chalk.magenta(season) +
-            chalk.white(`'s [verify()] in `) +
+            chalk.white(`'s data in `) +
+            chalk.blue((performance.now() - start).toFixed(3) + ' ms')
+    );
+
+    return true;
+}
+
+export function verifyStatus(apiData, dbData, season) {
+    const start = performance.now();
+
+    if (apiData.time !== dbData.time) {
+        log.warn(
+            'Mismatch between API and DB timestamps: ' +
+                chalk.magenta(apiData.time) +
+                ' | ' +
+                chalk.magenta(dbData.time)
+        );
+        return false;
+    }
+
+    if (!deepEqual(apiData.campaign_status, dbData.campaign_status)) {
+        return false;
+    }
+
+    if (!deepEqual(apiData.defend_event, dbData.defend_event)) {
+        return false;
+    }
+
+    if (!deepEqual(apiData.attack_events, dbData.attack_events)) {
+        return false;
+    }
+
+    if (!deepEqual(apiData.statistics, dbData.statistics)) {
+        return false;
+    }
+
+    log.info(
+        chalk.white(`(6/7) VERIFY STATUS's data in `) +
             chalk.blue((performance.now() - start).toFixed(3) + ' ms')
     );
 
