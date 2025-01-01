@@ -69,7 +69,12 @@ model snapshots {
 // #region STATUS (get_campaign_status) AND RELATED TABLES
 model status {
   id   String @id @default(uuid(7))
-  time Int //data
+  season Int
+  time Int @unique
+  campaign_status Json
+  defend_event Json
+  attack_events Json
+  statistics Json
   // relationship
   // defend_events defend_events[] @relation("OneSeasonToManyDefendEvents")
   // attack_events attack_events[] @relation("OneSeasonToManyAttackEvents")
@@ -116,7 +121,7 @@ model defend_events {
   points_max       Int
   points           Int
   status           String
-  players_at_start Int
+  players_at_start Int?
   //relationship
   linked_season season @relation("OneSeasonToManyDefendEvents", fields: [season], references: [season])
   //indexes
@@ -134,7 +139,7 @@ model attack_events {
   points_max       Int
   points           Int
   status           String
-  players_at_start Int
+  players_at_start Int?
   //relationship
   linked_season season @relation("OneSeasonToManyAttackEvents", fields: [season], references: [season])
   //indexes

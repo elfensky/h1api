@@ -5,34 +5,41 @@ import { getLogger } from '../../utilities/loggers.js';
 import chalk from 'chalk';
 const log = getLogger();
 
-export default async function upsertSeason(season, data) {
+export default async function upsertStatus(season, data) {
     const start = performance.now();
 
     try {
-        const existingRecord = await prisma.season.findUnique({
+        const existingRecord = await prisma.status.findUnique({
             where: {
-                season: season,
+                time: data.time,
             },
         });
 
-        const upsertRecord = await prisma.season.upsert({
+        const upsertRecord = await prisma.status.upsert({
             where: {
-                season: season,
+                time: data.time,
             },
             update: {
-                time: data.time,
+                season: season,
+                attack_events: data.attack_events,
+                campaign_status: data.campaign_status,
+                defend_event: data.defend_event,
+                statistics: data.statistics,
             },
             create: {
                 season: season,
                 time: data.time,
+                attack_events: data.attack_events,
+                campaign_status: data.campaign_status,
+                defend_event: data.defend_event,
+                statistics: data.statistics,
             },
         });
 
         const action = existingRecord ? 'UPDATE' : 'CREATE';
 
         log.info(
-            chalk.white(`(1/8) ${action} SEASON `) +
-                chalk.magenta(upsertRecord.season) +
+            chalk.white(`(1/8) ${action} STATUS`) +
                 chalk.white("'s [core] in ") +
                 chalk.blue((performance.now() - start).toFixed(3) + ' ms')
         );

@@ -17,7 +17,7 @@ import swaggerUi from 'swagger-ui-express';
 import performanceMiddleware from './middleware/performance.js';
 import umamiMiddleware from './middleware/umami.js';
 // updates
-import updateCampaignStatus from './updates/updateCampaignStatus.js';
+import updateStatus from './updates/updateStatus.js';
 import updateSeason from './updates/updateSeason.js';
 // utils
 import configureDB from './config/database.js';
@@ -59,8 +59,8 @@ app.get('/', (req, res) => {
 async function main() {
     await configureDB(); // check if WAL mode is enabled, and enable if not
 
-    // await updateCampaignStatus();
-    await updateSeason(142);
+    await updateStatus();
+    await updateSeason(143);
 
     // start express server
     app.listen(port, () => {

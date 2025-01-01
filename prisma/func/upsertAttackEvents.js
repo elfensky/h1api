@@ -9,6 +9,7 @@ export default async function upsertAttackEvents(season, data) {
     const start = performance.now();
     try {
         const recordList = [];
+        const type = 'introduction_order' in data ? 'SEASON' : 'STATUS';
         let action = 'UNKNOWN';
 
         for (const [key, event] of data.attack_events.entries()) {
@@ -54,12 +55,23 @@ export default async function upsertAttackEvents(season, data) {
             recordList.push(upsertRecord);
         }
 
+        const message =
+            type === 'SEASON'
+                ? chalk.magenta(' ' + season) +
+                  chalk.white(
+                      `'s [${chalk.magenta(
+                          recordList.length
+                      )} attack events] in `
+                  )
+                : chalk.white(
+                      `'s [${chalk.magenta(
+                          recordList.length
+                      )} attack events] in `
+                  );
+
         log.info(
-            chalk.white(`(6/8) ${action} SEASON `) +
-                chalk.magenta(season) +
-                chalk.white(
-                    `'s [${chalk.magenta(recordList.length)} attack events] in `
-                ) +
+            chalk.white(`(6/6) ${action} ${type}`) +
+                message +
                 chalk.blue((performance.now() - start).toFixed(3) + ' ms')
         );
 
