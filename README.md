@@ -1,6 +1,14 @@
 # h1api
 
-api cache, rebroadcaster and editor.
+This is a drop-in replacement for services that use the official helldivers1 API.
+It acts like a cache and rebroadcaster.
+
+Additionally, it provides new APIs to access historic data.
+
+## requirements
+
+-   node@22@lts
+-   mysql@8
 
 ## Setup local environment
 
@@ -13,8 +21,6 @@ npm i
 2. Create a `.env` file in the root directory of the project and add the following variables:
 
 ```conf
-# SQLITE EXAMPLE:
-# DATABASE_URL="file:../db.sqlite"
 
 # MYSQL EXAMPLE:
 # host.docker.internal is a special hostname that resolves to the internal IP address of the host machine
@@ -35,7 +41,7 @@ docker build -t elfensky/h1api:latest .
 
 docker buildx build --platform linux/amd64 -t elfensky/h1api:latest . --push
 
-#### Run in production
+## Deploy to production
 
 1. docker pull elfensky/h1api:latest
 2. create an .env file with the same variables as above and note its path
@@ -49,8 +55,8 @@ services:
         ports:
             - '52001:3000'
         environment:
-            - DATABASE_URL=${DATABASE_URL}
-            - SENTRY_DSN=${SENTRY_DSN}
+            - DATABASE_URL=${DATABASE_URL} # docker compose will read the .env file
+            - SENTRY_DSN=${SENTRY_DSN} # docker compose will read the .env file
         restart: unless-stopped
         network_mode: bridge # Use the default, ufw-whitelisted Docker Network
         extra_hosts:
@@ -59,7 +65,7 @@ services:
 
 4. run `docker-compose up -d` to start the bot
 
-#### Updates
+## Updates
 
 1. `docker pull elfensky/h1api:latest` to pull the latest version
 2. `docker compose up -d` to recreate and restart the container
