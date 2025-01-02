@@ -64,15 +64,6 @@ async function main() {
     await configureDB();
     await configureDATA(release);
 
-    // let dbconfig = null;
-    // dbconfig = await configureDB();
-    // appconfig = await configureDATA(release, dbconfig);
-
-    // await configureDB().then((result) => {
-    //     console.log('result', result);
-    //     await configureDATA(release);
-    // });
-
     // start express server
     app.listen(port, () => {
         const every15seconds = new CronJob(
@@ -81,7 +72,7 @@ async function main() {
                 const update = updateStatus(release);
             },
             null, // No onComplete function
-            true, // Start the job right now)
+            false, // Start the job right now)
             'Europe/Brussels' // Time zone);
         );
 
@@ -93,7 +84,7 @@ async function main() {
                 });
             },
             null, // No onComplete function
-            true, // Start the job right now)
+            false, // Start the job right now)
             'Europe/Brussels' // Time zone);
         );
 

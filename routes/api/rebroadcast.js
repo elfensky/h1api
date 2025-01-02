@@ -1,67 +1,20 @@
 import express from 'express';
-import { performance } from 'perf_hooks';
 import multer from 'multer';
 // components
-import { post_rebroadcast_schema } from '../../utilities/zod.js';
-import getRebroadcast from '../../prisma/functions/getRebroadcast.js'; //db
+import { rebroadcast_schema } from '../../utilities/zod.js';
 import getInfo from '../../utilities/info.js';
+import updateSeason from '../../updates/updateSeason.js';
+//db
+import getStatus from '../../prisma/func/getStatus.js';
+import getSeason from '../../prisma/func/getSeason.js';
+// logs, monitoring, etc
+import { performance } from 'perf_hooks';
+import { getLogger } from '../../utilities/loggers.js';
+import chalk from 'chalk';
+const log = getLogger();
 // setup
 const router = express.Router();
 const upload = multer({ dest: 'data/' });
-
-/**
- * @swagger
- * /rebroadcast:
- *   get:
- *     tags:
- *       - Rebroadcast
- *     summary: Retrieve campaign data
- *     description: Fetches campaign data from the database and returns it as JSON.
- *     responses:
- *       200:
- *         description: Successfully retrieved campaign data
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   id:
- *                     type: integer
- *                     description: The campaign ID
- *                     example: 1
- *                   name:
- *                     type: string
- *                     description: The name of the campaign
- *                     example: "Campaign Name"
- *       500:
- *         description: Internal Server Error
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: Internal Server Error
- */
-router.get('/rebroadcast', async (req, res) => {
-    const start = performance.now();
-
-    try {
-        const data = await getRebroadcast();
-        if (!data) {
-            throw new Error('failed getDefendEvent()');
-        } else {
-            res.json(data);
-        }
-    } catch (error) {
-        console.error('rebroadcast.js - ', error);
-        const info = getInfo(start, 500);
-        res.status(info.code).json({ info, error: error.message });
-    }
-});
 
 /**
  * @swagger
@@ -141,29 +94,56 @@ router.post('/rebroadcast', upload.none(), async (req, res) => {
     const body = req.body;
 
     try {
-        // Validate and parse the request body
-        const validatedData = post_rebroadcast_schema.parse(req.body);
-        return res.json(validatedData);
-        throw new Error('validatedData: ' + JSON.stringify(validatedData));
-    } catch (e) {
-        res.status(400).json({ errors: e.errors });
-    }
+        if (!body) {
+            throw new Error('body is required');
+        }
 
-    if (body.action === 'get_campaign_status') {
-        try {
-            const data = await getRebroadcast();
+        if (!body.action) {
+            throw new Error('action is required');
+        }
+
+        const validated = rebroadcast_schema.parse(body);
+
+        if (validated.error) {
+            throw new Error(validatedData.error);
+        }
+
+        if (validated.action === 'get_campaign_status') {
+            const data = await getStatus();
+
             if (!data) {
-                throw new Error('failed DB get_campaign_status()');
-            } else {
-                res.json(data);
+                throw new Error('failed getStatus()', {
+                    cause: 'routes/api/rebroadcast.js',
+                });
             }
-        } catch (error) {
-            console.error(
-                'failed POST /rebroadcast - get_campaign_status() -',
-                error.message
-            );
-            const info = getInfo(start, 500);
-            res.status(info.code).json({ info, error: error.message });
+
+            res.json(data);
+        }
+
+        if (validated.action === 'get_snapshots') {
+            const localData = await getSeason(validated.season);
+
+            if (localData) {
+                res.json(localData);
+            } else {
+                const remote = await updateSeason(validated.season);
+                res.json(remote);
+            }
+        }
+    } catch (error) {
+        if (error.constructor.name === 'ZodError') {
+            const messages = [];
+            for (const issue of error.issues) {
+                messages.push(issue.message);
+            }
+            const info = getInfo(start, 400);
+            res.status(400).json({ info: info, error: messages });
+        } else {
+            log.error(chalk.red('(1/2) in ') + chalk.magenta(error.cause));
+            log.error(chalk.red('(2/2) ' + error.stack));
+
+            const info = getInfo(start, 400);
+            res.status(400).json({ info: info, error: error.message });
         }
     }
 });

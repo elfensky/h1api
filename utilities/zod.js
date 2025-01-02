@@ -1,13 +1,8 @@
 import { z } from 'zod';
 
-export const post_rebroadcast_schema = z
+export const rebroadcast_schema = z
     .object({
-        action: z
-            .string()
-            .min(13, 'action must be get_campaign_status or get_snapshots')
-            .refine((val) => val.startsWith('get_'), {
-                message: 'action must start with "get_"',
-            }),
+        action: z.enum(['get_campaign_status', 'get_snapshots']),
         season: z
             .string()
             .min(1, 'season must be at least 1 character long')
@@ -29,7 +24,7 @@ export const post_rebroadcast_schema = z
             return true;
         },
         {
-            message: 'season must be present if action is "get_snapshots"',
+            message: 'season must be present if action is [get_snapshots]',
             path: ['season'], // This specifies which field the error message should be associated with
         }
     );
