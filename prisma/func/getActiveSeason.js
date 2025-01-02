@@ -8,12 +8,13 @@ const log = getLogger();
 
 export default async function getActiveSeason(id) {
     const start = performance.now();
+    const release = 'helldivers1api@' + process.env.npm_package_version;
 
     try {
         // Retrieve the app data by ID
         const appData = await prisma.appdata.findUnique({
             where: {
-                id: id,
+                id: id || release,
             },
         });
 

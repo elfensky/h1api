@@ -1,7 +1,9 @@
 import express from 'express';
 import { performance } from 'perf_hooks';
+//db
+import getDefendEvent from '../../prisma/func/getDefendEvent.js'; //db
+import getAttackEvent from '../../prisma/func/getAttackEvent.js'; //db
 //components
-import getDefendEvent from '../../prisma/functions/getDefendEvent.js'; //db
 import getInfo from '../../utilities/info.js';
 //setup
 const router = express.Router();
@@ -77,27 +79,7 @@ router.get('/defend', async (req, res) => {
         if (!data) {
             throw new Error('failed getDefendEvent()');
         } else {
-            const testData = {
-                info: {
-                    ms: 45.153,
-                    code: 200,
-                    status: 'OK',
-                },
-                data: {
-                    season: 143,
-                    event_id: 4247,
-                    start_time: 1735410602,
-                    end_time: 1735420602,
-                    region: 1,
-                    enemy: 2,
-                    points_max: 2000,
-                    points: 2000,
-                    status: 'success', // active, success, failure
-                },
-            };
-            res.json(testData);
-            // const info = getInfo(req.startTime, 200);
-            // res.status(info.code).json({ info, data });
+            res.json(data);
         }
     } catch (error) {
         console.error('Error fetching campaign data:', error);
@@ -106,15 +88,29 @@ router.get('/defend', async (req, res) => {
     }
 });
 
-router.get('/defend/:id', async (req, res) => {
-    console.log('/v1/bot/defend/' + req.params.id);
-    res.json({ api: '/defend/id', id: req.params.id });
-});
+// router.get('/defend/:id', async (req, res) => {
+//     console.log('/bot/defend/' + req.params.id);
+//     res.json({ api: '/defend/id', id: req.params.id });
+// });
 
 router.get('/attack', async (req, res) => {
-    console.log('/v1/bot/attack');
-
-    res.json({ api: '/attack' });
+    try {
+        const data = await getAttackEvent();
+        if (!data) {
+            throw new Error('failed getAttackEvent()');
+        } else {
+            res.json(data);
+        }
+    } catch (error) {
+        console.error('Error fetching campaign data:', error);
+        const info = getInfo(req.startTime, 500);
+        res.status(info.code).json({ info, error: error.message });
+    }
 });
+
+// router.get('/attack/:id', async (req, res) => {
+//     console.log('/bot/attack/' + req.params.id);
+//     res.json({ api: '/attack/id', id: req.params.id });
+// });
 
 export default router;
