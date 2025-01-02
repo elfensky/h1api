@@ -79,7 +79,8 @@ router.get('/defend', async (req, res) => {
         if (!data) {
             throw new Error('failed getDefendEvent()');
         } else {
-            res.json(data);
+            const info = getInfo(req.startTime, 200);
+            res.json({ info, data });
         }
     } catch (error) {
         console.error('Error fetching campaign data:', error);
@@ -99,7 +100,8 @@ router.get('/attack', async (req, res) => {
         if (!data) {
             throw new Error('failed getAttackEvent()');
         } else {
-            res.json(data);
+            const info = getInfo(req.startTime, 200);
+            res.json({ info, data });
         }
     } catch (error) {
         console.error('Error fetching campaign data:', error);
