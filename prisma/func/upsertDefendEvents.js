@@ -57,7 +57,7 @@ export default async function upsertDefendEvents(season, data) {
         }
 
         log.info(
-            chalk.white(`(5/8) ${action} SEASON `) +
+            chalk.white(`(6/9) ${action} SEASON `) +
                 chalk.magenta(season) +
                 chalk.white(
                     `'s [${chalk.magenta(recordList.length)} defend events] in `

@@ -44,7 +44,7 @@ export default async function upsertDefendEvent(season, data) {
         const action = existingRecord ? 'UPDATE' : 'CREATE';
 
         log.info(
-            chalk.white(`(5/6) ${action} STATUS`) +
+            chalk.white(`(3/7) ${action} STATUS`) +
                 chalk.white(`'s [defend event] in `) +
                 chalk.blue((performance.now() - start).toFixed(3) + ' ms')
         );

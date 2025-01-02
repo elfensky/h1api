@@ -2,6 +2,7 @@
 CREATE TABLE `app` (
     `id` VARCHAR(191) NOT NULL,
     `active_season` INTEGER NOT NULL,
+    `last_updated` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -46,7 +47,7 @@ CREATE TABLE `snapshots` (
     `id` VARCHAR(191) NOT NULL,
     `season` INTEGER NOT NULL,
     `time` INTEGER NOT NULL,
-    `json` JSON NOT NULL,
+    `data` JSON NOT NULL,
 
     UNIQUE INDEX `snapshots_time_key`(`time`),
     PRIMARY KEY (`id`)
@@ -55,15 +56,23 @@ CREATE TABLE `snapshots` (
 -- CreateTable
 CREATE TABLE `status` (
     `id` VARCHAR(191) NOT NULL,
+    `season` INTEGER NOT NULL,
     `time` INTEGER NOT NULL,
+    `campaign_status` JSON NOT NULL,
+    `defend_event` JSON NOT NULL,
+    `attack_events` JSON NOT NULL,
+    `statistics` JSON NOT NULL,
 
+    UNIQUE INDEX `status_time_key`(`time`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
 CREATE TABLE `statistics` (
     `id` VARCHAR(191) NOT NULL,
-    `season` INTEGER NOT NULL,
+    `hash` VARCHAR(191) NOT NULL,
+    `time` INTEGER NOT NULL,
+    `season` INTEGER NULL,
     `season_duration` INTEGER NOT NULL,
     `enemy` INTEGER NOT NULL,
     `players` INTEGER NOT NULL,
@@ -82,6 +91,10 @@ CREATE TABLE `statistics` (
     `shots` BIGINT NOT NULL,
     `hits` BIGINT NOT NULL,
 
+    UNIQUE INDEX `statistics_hash_key`(`hash`),
+    INDEX `statistics_hash_idx`(`hash`),
+    INDEX `statistics_time_idx`(`time`),
+    INDEX `statistics_season_idx`(`season`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -97,8 +110,9 @@ CREATE TABLE `defend_events` (
     `points_max` INTEGER NOT NULL,
     `points` INTEGER NOT NULL,
     `status` VARCHAR(191) NOT NULL,
-    `players_at_start` INTEGER NOT NULL,
+    `players_at_start` INTEGER NULL,
 
+    UNIQUE INDEX `defend_events_event_id_key`(`event_id`),
     INDEX `defend_events_event_id_idx`(`event_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -114,93 +128,10 @@ CREATE TABLE `attack_events` (
     `points_max` INTEGER NOT NULL,
     `points` INTEGER NOT NULL,
     `status` VARCHAR(191) NOT NULL,
-    `players_at_start` INTEGER NOT NULL,
+    `players_at_start` INTEGER NULL,
 
+    UNIQUE INDEX `attack_events_event_id_key`(`event_id`),
     INDEX `attack_events_event_id_idx`(`event_id`),
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
-CREATE TABLE `Timestamp` (
-    `id` VARCHAR(191) NOT NULL,
-    `timestamp` DATETIME(3) NOT NULL,
-
-    UNIQUE INDEX `Timestamp_timestamp_key`(`timestamp`),
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
-CREATE TABLE `CampaignStatus` (
-    `id` VARCHAR(191) NOT NULL,
-    `timestamp` DATETIME(3) NOT NULL,
-    `season` INTEGER NOT NULL,
-    `points` INTEGER NOT NULL,
-    `points_taken` INTEGER NOT NULL,
-    `points_max` INTEGER NOT NULL,
-    `status` VARCHAR(191) NOT NULL,
-    `introduction_order` INTEGER NOT NULL,
-
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
-CREATE TABLE `DefendEvent` (
-    `id` VARCHAR(191) NOT NULL,
-    `timestamp` DATETIME(3) NOT NULL,
-    `season` INTEGER NOT NULL,
-    `event_id` INTEGER NOT NULL,
-    `start_time` INTEGER NOT NULL,
-    `end_time` INTEGER NOT NULL,
-    `region` INTEGER NOT NULL,
-    `enemy` INTEGER NOT NULL,
-    `points_max` INTEGER NOT NULL,
-    `points` INTEGER NOT NULL,
-    `status` VARCHAR(191) NOT NULL,
-
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
-CREATE TABLE `AttackEvent` (
-    `id` VARCHAR(191) NOT NULL,
-    `timestamp` DATETIME(3) NOT NULL,
-    `season` INTEGER NOT NULL,
-    `event_id` INTEGER NOT NULL,
-    `start_time` INTEGER NOT NULL,
-    `end_time` INTEGER NOT NULL,
-    `enemy` INTEGER NOT NULL,
-    `points_max` INTEGER NOT NULL,
-    `points` INTEGER NOT NULL,
-    `status` VARCHAR(191) NOT NULL,
-    `players_at_start` INTEGER NOT NULL,
-    `max_event_id` INTEGER NOT NULL,
-
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
-CREATE TABLE `Statistic` (
-    `id` VARCHAR(191) NOT NULL,
-    `timestamp` DATETIME(3) NOT NULL,
-    `season` INTEGER NOT NULL,
-    `season_duration` INTEGER NOT NULL,
-    `enemy` INTEGER NOT NULL,
-    `players` INTEGER NOT NULL,
-    `total_unique_players` INTEGER NOT NULL,
-    `missions` INTEGER NOT NULL,
-    `successful_missions` INTEGER NOT NULL,
-    `total_mission_difficulty` INTEGER NOT NULL,
-    `completed_planets` INTEGER NOT NULL,
-    `defend_events` INTEGER NOT NULL,
-    `successful_defend_events` INTEGER NOT NULL,
-    `attack_events` INTEGER NOT NULL,
-    `successful_attack_events` INTEGER NOT NULL,
-    `deaths` BIGINT NOT NULL,
-    `kills` BIGINT NOT NULL,
-    `accidentals` BIGINT NOT NULL,
-    `shots` BIGINT NOT NULL,
-    `hits` BIGINT NOT NULL,
-
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -214,13 +145,13 @@ ALTER TABLE `points_max` ADD CONSTRAINT `points_max_season_fkey` FOREIGN KEY (`s
 ALTER TABLE `snapshots` ADD CONSTRAINT `snapshots_season_fkey` FOREIGN KEY (`season`) REFERENCES `season`(`season`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `CampaignStatus` ADD CONSTRAINT `CampaignStatus_timestamp_fkey` FOREIGN KEY (`timestamp`) REFERENCES `Timestamp`(`timestamp`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `statistics` ADD CONSTRAINT `statistics_time_fkey` FOREIGN KEY (`time`) REFERENCES `status`(`time`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `DefendEvent` ADD CONSTRAINT `DefendEvent_timestamp_fkey` FOREIGN KEY (`timestamp`) REFERENCES `Timestamp`(`timestamp`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `statistics` ADD CONSTRAINT `statistics_season_fkey` FOREIGN KEY (`season`) REFERENCES `season`(`season`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `AttackEvent` ADD CONSTRAINT `AttackEvent_timestamp_fkey` FOREIGN KEY (`timestamp`) REFERENCES `Timestamp`(`timestamp`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `defend_events` ADD CONSTRAINT `defend_events_season_fkey` FOREIGN KEY (`season`) REFERENCES `season`(`season`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Statistic` ADD CONSTRAINT `Statistic_timestamp_fkey` FOREIGN KEY (`timestamp`) REFERENCES `Timestamp`(`timestamp`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `attack_events` ADD CONSTRAINT `attack_events_season_fkey` FOREIGN KEY (`season`) REFERENCES `season`(`season`) ON DELETE RESTRICT ON UPDATE CASCADE;

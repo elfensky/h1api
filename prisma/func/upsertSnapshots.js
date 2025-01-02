@@ -44,7 +44,7 @@ export default async function upsertSnapshots(season, data) {
         }
 
         log.info(
-            chalk.white(`(4/8) ${action} SEASON `) +
+            chalk.white(`(5/9) ${action} SEASON `) +
                 chalk.magenta(season) +
                 chalk.white(
                     `'s [${chalk.magenta(recordList.length)} snapshots] in `

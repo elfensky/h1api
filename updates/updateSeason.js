@@ -17,7 +17,7 @@ import { getLogger } from '../utilities/loggers.js';
 import chalk from 'chalk';
 const log = getLogger();
 
-async function fetchSeason(season) {
+export async function fetchSeason(season) {
     if (!season) {
         throw new Error('season parameter is required', {
             cause: 'fetchSeason()',
@@ -63,7 +63,7 @@ async function fetchSeason(season) {
     }
 }
 
-async function fetchSeasonTEST(season) {
+export async function fetchSeasonTEST(season) {
     return {
         time: 1735689365,
         error_code: 0,
@@ -224,7 +224,7 @@ export default async function updateSeason(season) {
     const start = performance.now();
 
     try {
-        const data = await fetchSeason(season);
+        const data = await fetchSeasonTEST(season);
 
         if (!data) {
             throw new Error('No data available', {
@@ -232,10 +232,9 @@ export default async function updateSeason(season) {
             });
         } else {
             const message =
-                chalk.gray('(1/6) START UPDATE SEASON ') +
-                chalk.yellow(
-                    `POST [get_snapshots] [${season}] https://api.helldiversgame.com/1.0/`
-                ) +
+                chalk.white('(1/9) START SEASON UPDATE ') +
+                chalk.magenta(`POST [get_snapshots] [${season}]`) +
+                chalk.yellow.underline('https://api.helldiversgame.com/1.0/') +
                 chalk.white(' took ') +
                 chalk.blue((performance.now() - start).toFixed(3) + ' ms');
             log.info(message);
@@ -317,7 +316,7 @@ export default async function updateSeason(season) {
                 const duration = performance.now() - start;
 
                 log.info(
-                    chalk.green(`(8/8) UPDATED SEASON `) +
+                    chalk.green(`(8/9) UPDATED SEASON `) +
                         chalk.magenta(season) +
                         chalk.white(' in ') +
                         chalk.blue(

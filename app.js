@@ -21,6 +21,7 @@ import updateStatus from './updates/updateStatus.js';
 import updateSeason from './updates/updateSeason.js';
 // utils
 import configureDB from './config/database.js';
+import configureDATA from './config/data.js';
 // routes
 import rebroadcastRouter from './routes/api/rebroadcast.js';
 import botRouter from './routes/api/bot.js';
@@ -57,22 +58,26 @@ app.get('/', (req, res) => {
 });
 
 async function main() {
-    await configureDB(); // check if WAL mode is enabled, and enable if not
+    await configureDB();
 
+    // await configureDATA();
     await updateStatus();
-    // await updateSeason(1);
+    await updateSeason(143);
 
     // start express server
     app.listen(port, () => {
         // const getDataFromAPI = new CronJob(
         //     '*/15 * * * * *',
         //     () => {
-        //         updateCampaignStatus(); // Your function to update API data
+        //         const activeSeason = getActiveSeason();
+        //         const season = updateSeason(activeSeason);
+        //         const status = updateStatus();
         //     },
         //     null, // No onComplete function
-        //     true, // Start the job right now)
+        //     false, // Start the job right now)
         //     'Europe/Brussels' // Time zone);
         // );
+
         log.info('APP - express is running');
         log.info(
             'APP - swagger documentation is available at ' +

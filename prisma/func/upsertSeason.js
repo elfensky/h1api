@@ -31,7 +31,7 @@ export default async function upsertSeason(season, data) {
         const action = existingRecord ? 'UPDATE' : 'CREATE';
 
         log.info(
-            chalk.white(`(1/8) ${action} SEASON `) +
+            chalk.white(`(2/9) ${action} SEASON `) +
                 chalk.magenta(upsertRecord.season) +
                 chalk.white("'s [core] in ") +
                 chalk.blue((performance.now() - start).toFixed(3) + ' ms')

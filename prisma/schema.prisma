@@ -11,10 +11,10 @@ generator client {
   binaryTargets = ["native", "darwin-arm64", "linux-arm64-openssl-3.0.x", "linux-musl-openssl-3.0.x"]
 }
 
-model app {
-    id String @id @default(uuid(7))
+model appdata {
+    id String @id @unique
     active_season Int
-    
+    last_updated DateTime @default(now())
 }
 // #region SEASON (get_snapshots) AND RELATED TABLES
 model season {
@@ -30,6 +30,7 @@ model season {
   snapshots snapshots[] @relation("OneSeasonToManySnapshots")
   defend_events defend_events[] @relation("OneSeasonToManyDefendEvents")
   attack_events attack_events[] @relation("OneSeasonToManyAttackEvents")
+  statistics statistics[] @relation("OneSeasonToManyStatistics")
   //indexes
   @@index([season])
 }
@@ -76,13 +77,13 @@ model status {
   attack_events Json
   statistics Json
   // relationship
-  // defend_events defend_events[] @relation("OneSeasonToManyDefendEvents")
-  // attack_events attack_events[] @relation("OneSeasonToManyAttackEvents")
-  // statistics statistics[] @relation("OneSeasonToManyStatistics")
+  linked_statistics statistics[] @relation("OneStatusToManyStatistics")
 }
 
 model statistics {
   id                       String @id @default(uuid(7))
+  hash                     String @unique //season+time 
+  time                     Int //foreign key
   season                   Int //foreign key
   season_duration          Int
   enemy                    Int
@@ -102,8 +103,14 @@ model statistics {
   shots                    BigInt
   hits                     BigInt
 
-  // Define the relationship with TimeStamps
-  //   linked_season season @relation(fields: [season], references: [season])
+  // Define the relationship with Status and SEason
+  linked_time status @relation("OneStatusToManyStatistics", fields: [time], references: [time])
+  linked_season season? @relation("OneSeasonToManyStatistics", fields: [season], references: [season])
+  //indexes
+  @@index([hash])
+  @@index([time])
+  @@index([season])
+ 
 }
 
 // #endregion
@@ -154,91 +161,8 @@ model attack_events {
  * --> npx prisma migrate dev --name "name or description"
  * apply db schema on prod
  * --> npx prisma migrate deploy
+
+
+ * 
+ * npx prisma generate
  */
-
-// #region OLD            
-model Timestamp {
-  id               String           @id @default(uuid(7))
-  timestamp        DateTime         @unique
-  campaignStatuses CampaignStatus[]
-  defendEvents     DefendEvent[]
-  attackEvents     AttackEvent[]
-  statistics       Statistic[]
-}
-
-model CampaignStatus {
-  id                 String   @id @default(uuid(7))
-  timestamp          DateTime
-  season             Int
-  points             Int
-  points_taken       Int
-  points_max         Int
-  status             String
-  introduction_order Int
-
-  // Define the relationship with TimeStamps
-  Timestamp Timestamp @relation(fields: [timestamp], references: [timestamp])
-}
-
-model DefendEvent {
-  id         String   @id @default(uuid(7))
-  timestamp  DateTime // used to link together data from the same api query
-  season     Int
-  event_id   Int
-  start_time Int
-  end_time   Int
-  region     Int
-  enemy      Int
-  points_max Int
-  points     Int
-  status     String
-
-  // Define the relationship with TimeStamps
-  Timestamp Timestamp @relation(fields: [timestamp], references: [timestamp])
-}
-
-model AttackEvent {
-  id               String   @id @default(uuid(7))
-  timestamp        DateTime // used to link together data from the same api query
-  season           Int
-  event_id         Int
-  start_time       Int
-  end_time         Int
-  enemy            Int
-  points_max       Int
-  points           Int
-  status           String
-  players_at_start Int
-  max_event_id     Int
-
-  // Define the relationship with TimeStamps
-  Timestamp Timestamp @relation(fields: [timestamp], references: [timestamp])
-}
-
-model Statistic {
-  id                       String   @id @default(uuid(7))
-  timestamp                DateTime // used to link together data from the same api query
-  season                   Int
-  season_duration          Int
-  enemy                    Int
-  players                  Int
-  total_unique_players     Int
-  missions                 Int
-  successful_missions      Int
-  total_mission_difficulty Int
-  completed_planets        Int
-  defend_events            Int
-  successful_defend_events Int
-  attack_events            Int
-  successful_attack_events Int
-  deaths                   BigInt
-  kills                    BigInt
-  accidentals              BigInt
-  shots                    BigInt
-  hits                     BigInt
-
-  // Define the relationship with TimeStamps
-  Timestamp Timestamp @relation(fields: [timestamp], references: [timestamp])
-}
-
-// #endregion

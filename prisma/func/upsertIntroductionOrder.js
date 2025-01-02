@@ -31,7 +31,7 @@ export default async function upsertIntroductionOrder(season, data) {
         const action = existingRecord ? 'UPDATE' : 'CREATE';
 
         log.info(
-            chalk.white(`(2/8) ${action} SEASON `) +
+            chalk.white(`(3/9) ${action} SEASON `) +
                 chalk.magenta(season) +
                 chalk.white("'s [introduction_order] in ") +
                 chalk.blue((performance.now() - start).toFixed(3) + ' ms')

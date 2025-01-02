@@ -31,7 +31,7 @@ export default async function upsertPointsMax(season, data) {
         const action = existingRecord ? 'UPDATE' : 'CREATE';
 
         log.info(
-            chalk.white(`(3/8) ${action} SEASON `) +
+            chalk.white(`(4/9) ${action} SEASON `) +
                 chalk.magenta(season) +
                 chalk.white("'s [points_max] in ") +
                 chalk.blue((performance.now() - start).toFixed(3) + ' ms')

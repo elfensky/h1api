@@ -6,6 +6,7 @@ import FormData from 'form-data';
 import upsertStatus from '../prisma/func/upsertStatus.js';
 import upsertDefendEvent from '../prisma/func/upsertDefendEvent.js';
 import upsertAttackEvents from '../prisma/func/upsertAttackEvents.js';
+import upsertStatistics from '../prisma/func/upsertStatistics.js';
 // helpers
 import { verifyStatus } from '../utilities/compare.js';
 // logs, monitoring, etc
@@ -14,7 +15,7 @@ import { getLogger } from '../utilities/loggers.js';
 import chalk from 'chalk';
 const log = getLogger();
 
-async function fetchStatus() {
+export async function fetchStatus() {
     // The API URL you want to ping
     const url = 'https://api.helldiversgame.com/1.0/';
     const form = new FormData();
@@ -48,7 +49,7 @@ async function fetchStatus() {
     }
 }
 
-async function fetchStatusTEST() {
+export async function fetchStatusTEST() {
     return {
         time: 1735688342,
         error_code: 0,
@@ -204,10 +205,9 @@ export default async function updateStatus() {
             });
         } else {
             const message =
-                chalk.gray('(1/6) START UPDATE STATUS ') +
-                chalk.yellow(
-                    `POST [get_campaign_status] https://api.helldiversgame.com/1.0/`
-                ) +
+                chalk.white('(1/7) START STATUS UPDATE ') +
+                chalk.magenta('POST [get_campaign_status]') +
+                chalk.yellow.underline('https://api.helldiversgame.com/1.0/') +
                 chalk.white(' took ') +
                 chalk.blue((performance.now() - start).toFixed(3) + ' ms');
             log.info(message);
@@ -219,6 +219,8 @@ export default async function updateStatus() {
             const newDefendEvent = await upsertDefendEvent(season, data);
 
             const newAttackEvents = await upsertAttackEvents(season, data);
+
+            const newStatistics = await upsertStatistics(season, data);
 
             if (!newStatus) {
                 throw new Error(`Failed upsert: newStatus is falsy`, {
@@ -238,6 +240,15 @@ export default async function updateStatus() {
                 });
             }
 
+            if (!newStatistics) {
+                throw new Error(`Failed upsert: newStatistics is falsy`, {
+                    cause: 'updates/updateStatus.js',
+                });
+            }
+
+            // only [newStatus] is used for the rebroadcast API.
+            // [newDefendEvent, newAttackEvents] are used to update the current season's attack and defend events.
+            // [newStatistics] are used for historic data
             const response = {
                 time: newStatus.time,
                 error_code: 0,
@@ -253,7 +264,7 @@ export default async function updateStatus() {
                 log.info(
                     chalk.green(`(7/7) UPDATED STATUS in `) +
                         chalk.blue(
-                            (performance.now() - start).toFixed(3) + ' ms\n'
+                            (performance.now() - start).toFixed(3) + ' ms'
                         )
                 );
             } else {

@@ -55,6 +55,7 @@ export default async function upsertAttackEvents(season, data) {
             recordList.push(upsertRecord);
         }
 
+        const step = type === 'SEASON' ? '(7/9)' : '(4/7)';
         const message =
             type === 'SEASON'
                 ? chalk.magenta(' ' + season) +
@@ -70,7 +71,7 @@ export default async function upsertAttackEvents(season, data) {
                   );
 
         log.info(
-            chalk.white(`(6/6) ${action} ${type}`) +
+            chalk.white(`${step} ${action} ${type}`) +
                 message +
                 chalk.blue((performance.now() - start).toFixed(3) + ' ms')
         );

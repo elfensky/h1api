@@ -39,7 +39,7 @@ export default async function upsertStatus(season, data) {
         const action = existingRecord ? 'UPDATE' : 'CREATE';
 
         log.info(
-            chalk.white(`(1/8) ${action} STATUS`) +
+            chalk.white(`(2/7) ${action} STATUS`) +
                 chalk.white("'s [core] in ") +
                 chalk.blue((performance.now() - start).toFixed(3) + ' ms')
         );
