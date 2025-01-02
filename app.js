@@ -60,9 +60,9 @@ app.get('/', (req, res) => {
 async function main() {
     await configureDB();
 
-    // await configureDATA();
-    await updateStatus();
-    await updateSeason(143);
+    await configureDATA();
+    // await updateStatus();
+    // await updateSeason(143);
 
     // start express server
     app.listen(port, () => {

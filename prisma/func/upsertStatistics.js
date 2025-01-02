@@ -71,17 +71,15 @@ export default async function upsertStatistics(season, data) {
                 },
             });
 
-            // console.log('upsertRecord:', upsertRecord);
-
-            // const keysToRemove = ['id', 'time'];
-            // keysToRemove.forEach((key) => {
-            //     delete upsertRecord[key];
-            // });
+            const keysToRemove = ['id', 'hash', 'time'];
+            keysToRemove.forEach((key) => {
+                delete upsertRecord[key];
+            });
 
             action = existingRecord ? 'UPDATE' : 'CREATE';
             recordList.push(upsertRecord);
         }
-        console.log('recordList:', recordList);
+
         log.info(
             chalk.white(`(5/7) ${action} STATUS`) +
                 chalk.white(

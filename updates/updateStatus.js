@@ -9,6 +9,7 @@ import upsertAttackEvents from '../prisma/func/upsertAttackEvents.js';
 import upsertStatistics from '../prisma/func/upsertStatistics.js';
 // helpers
 import { verifyStatus } from '../utilities/compare.js';
+import getSeasonFromStatus from '../utilities/getSeasonFromStatus.js';
 // logs, monitoring, etc
 import { performance } from 'perf_hooks';
 import { getLogger } from '../utilities/loggers.js';
@@ -279,9 +280,4 @@ export default async function updateStatus() {
         log.error(chalk.red('(1/2) in ') + chalk.magenta(error.cause));
         log.error(chalk.red('(2/2) ' + error.stack));
     }
-}
-
-function getSeasonFromStatus(status) {
-    const season = status.campaign_status[0].season;
-    return season;
 }
