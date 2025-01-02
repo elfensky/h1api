@@ -17,8 +17,8 @@ import swaggerUi from 'swagger-ui-express';
 import performanceMiddleware from './middleware/performance.js';
 import umamiMiddleware from './middleware/umami.js';
 // utils
-import configureDB from './config/database.js';
-import configureDATA from './config/data.js';
+import configureDB from './config/configureDB.js';
+import configureDATA from './config/configureDATA.js';
 //db
 import getActiveSeason from './prisma/func/getActiveSeason.js';
 // updates
@@ -64,10 +64,19 @@ async function main() {
     await configureDB();
     await configureDATA(release);
 
+    // let dbconfig = null;
+    // dbconfig = await configureDB();
+    // appconfig = await configureDATA(release, dbconfig);
+
+    // await configureDB().then((result) => {
+    //     console.log('result', result);
+    //     await configureDATA(release);
+    // });
+
     // start express server
     app.listen(port, () => {
-        const every10seconds = new CronJob(
-            '*/10 * * * * *',
+        const every15seconds = new CronJob(
+            '*/15 * * * * *',
             () => {
                 const update = updateStatus(release);
             },
@@ -77,7 +86,7 @@ async function main() {
         );
 
         const every30seconds = new CronJob(
-            '*/30 * * * * *',
+            '5/30 * * * * *', //5 is so it's offset from the 15 above
             () => {
                 getActiveSeason(release).then((season) => {
                     const update = updateSeason(season);

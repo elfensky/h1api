@@ -39,24 +39,24 @@ export default async function configureDATA(release) {
     const start = performance.now();
 
     try {
-        log.info(chalk.white('(1/3) CHECKING APPDATA '));
+        log.info(chalk.white('(1/?) CHECKING APPDATA '));
         const appData = await getAppDataById(release);
 
         if (appData && !isMoreThanOneHourAgo(appData.last_updated)) {
-            log.info(chalk.white('(2/3) APPDATA IS UP TO DATE'));
-            log.info(chalk.green('(3/3) CONFIGURED APPDATA\n'));
+            log.info(chalk.white('(2/2) APPDATA IS UP TO DATE'));
+            // log.info(chalk.green('(3/3) CONFIGURED APPDATA\n'));
             return appData;
         }
 
         if (appData && isMoreThanOneHourAgo(appData.last_updated)) {
             log.warn(
-                chalk.white(`(2/3) APPDATA OUTDATED, FETCHING STATUS `) +
+                chalk.white(`(2/4) APPDATA OUTDATED, FETCHING STATUS `) +
                     chalk.blue((performance.now() - start).toFixed(3) + ' ms')
             );
         }
 
         if (!appData) {
-            log.warn(chalk.white('(2/3) NO APPDATA FOUND, FETCHING STATUS '));
+            log.warn(chalk.white('(2/4) NO APPDATA FOUND, FETCHING STATUS '));
         }
 
         const data = await fetchStatus(); // get API data so we can set current season
@@ -65,13 +65,13 @@ export default async function configureDATA(release) {
         const newAppData = await upsertAppData(season, release);
 
         if (!newAppData) {
-            log.error(chalk.red('(3/3) UNABLE TO INITIALIZE APPDATA\n'));
+            log.error(chalk.red('(4/4) UNABLE TO INITIALIZE APPDATA\n'));
         }
 
         const newSeason = await updateSeason(season);
 
         if (!newSeason) {
-            log.error(chalk.red('(3/3) UNABLE TO INITIALIZE NEWSEASONS\n'));
+            log.error(chalk.red('(4/4) UNABLE TO INITIALIZE NEWSEASONS\n'));
         }
 
         if (!newAppData || !newSeason) {
@@ -79,7 +79,7 @@ export default async function configureDATA(release) {
                 cause: 'config/data.js',
             });
         } else {
-            log.info(chalk.green('(3/3) APPDATA UPDATED\n'));
+            log.info(chalk.green('(4/4) APPDATA UPDATED\n'));
             return newAppData;
         }
     } catch (error) {
