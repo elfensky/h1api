@@ -224,7 +224,7 @@ export default async function updateSeason(season) {
     const start = performance.now();
 
     try {
-        const data = await fetchSeasonTEST(season);
+        const data = await fetchSeason(season);
 
         if (!data) {
             throw new Error('No data available', {
@@ -233,7 +233,7 @@ export default async function updateSeason(season) {
         } else {
             const message =
                 chalk.white('(1/9) START SEASON UPDATE ') +
-                chalk.magenta(`POST [get_snapshots] [${season}]`) +
+                chalk.magenta(`POST [get_snapshots] [${season}] `) +
                 chalk.yellow.underline('https://api.helldiversgame.com/1.0/') +
                 chalk.white(' took ') +
                 chalk.blue((performance.now() - start).toFixed(3) + ' ms');
@@ -316,11 +316,11 @@ export default async function updateSeason(season) {
                 const duration = performance.now() - start;
 
                 log.info(
-                    chalk.green(`(8/9) UPDATED SEASON `) +
+                    chalk.green(`(9/9) UPDATED SEASON `) +
                         chalk.magenta(season) +
                         chalk.white(' in ') +
                         chalk.blue(
-                            (performance.now() - start).toFixed(3) + ' ms'
+                            (performance.now() - start).toFixed(3) + ' ms\n'
                         )
                 );
             } else {

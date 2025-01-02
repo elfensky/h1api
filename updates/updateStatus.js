@@ -7,6 +7,7 @@ import upsertStatus from '../prisma/func/upsertStatus.js';
 import upsertDefendEvent from '../prisma/func/upsertDefendEvent.js';
 import upsertAttackEvents from '../prisma/func/upsertAttackEvents.js';
 import upsertStatistics from '../prisma/func/upsertStatistics.js';
+import upsertAppData from '../prisma/func/upsertAppData.js';
 // helpers
 import { verifyStatus } from '../utilities/compare.js';
 import getSeasonFromStatus from '../utilities/getSeasonFromStatus.js';
@@ -194,11 +195,11 @@ export async function fetchStatusTEST() {
     };
 }
 
-export default async function updateStatus() {
+export default async function updateStatus(release) {
     const start = performance.now();
 
     try {
-        const data = await fetchStatusTEST();
+        const data = await fetchStatus();
 
         if (!data) {
             throw new Error('No data available', {
@@ -222,6 +223,8 @@ export default async function updateStatus() {
             const newAttackEvents = await upsertAttackEvents(season, data);
 
             const newStatistics = await upsertStatistics(season, data);
+
+            const newAppData = await upsertAppData(season, release);
 
             if (!newStatus) {
                 throw new Error(`Failed upsert: newStatus is falsy`, {
@@ -247,6 +250,12 @@ export default async function updateStatus() {
                 });
             }
 
+            if (!newAppData) {
+                throw new Error(`Failed upsert: newAppData is falsy`, {
+                    cause: 'updates/updateStatus.js',
+                });
+            }
+
             // only [newStatus] is used for the rebroadcast API.
             // [newDefendEvent, newAttackEvents] are used to update the current season's attack and defend events.
             // [newStatistics] are used for historic data
@@ -265,7 +274,7 @@ export default async function updateStatus() {
                 log.info(
                     chalk.green(`(7/7) UPDATED STATUS in `) +
                         chalk.blue(
-                            (performance.now() - start).toFixed(3) + ' ms'
+                            (performance.now() - start).toFixed(3) + ' ms\n'
                         )
                 );
             } else {

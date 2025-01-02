@@ -16,12 +16,14 @@ import swaggerUi from 'swagger-ui-express';
 // middleware
 import performanceMiddleware from './middleware/performance.js';
 import umamiMiddleware from './middleware/umami.js';
-// updates
-import updateStatus from './updates/updateStatus.js';
-import updateSeason from './updates/updateSeason.js';
 // utils
 import configureDB from './config/database.js';
 import configureDATA from './config/data.js';
+//db
+import getActiveSeason from './prisma/func/getActiveSeason.js';
+// updates
+import updateStatus from './updates/updateStatus.js';
+import updateSeason from './updates/updateSeason.js';
 // routes
 import rebroadcastRouter from './routes/api/rebroadcast.js';
 import botRouter from './routes/api/bot.js';
@@ -35,6 +37,7 @@ const port = 3000;
 Sentry.setupExpressErrorHandler(app);
 app.set('view engine', 'pug'); // set the view engine to pug
 const swaggerSpec = swaggerJsdoc(swaggerOptions()); // Initialize swagger-jsdoc
+const release = 'helldivers1api@' + process.env.npm_package_version;
 
 // MIDDLEWARE
 app.use(performanceMiddleware); // performance middleware
@@ -59,31 +62,39 @@ app.get('/', (req, res) => {
 
 async function main() {
     await configureDB();
-
-    await configureDATA();
-    // await updateStatus();
-    // await updateSeason(143);
+    await configureDATA(release);
 
     // start express server
     app.listen(port, () => {
-        // const getDataFromAPI = new CronJob(
-        //     '*/15 * * * * *',
-        //     () => {
-        //         const activeSeason = getActiveSeason();
-        //         const season = updateSeason(activeSeason);
-        //         const status = updateStatus();
-        //     },
-        //     null, // No onComplete function
-        //     false, // Start the job right now)
-        //     'Europe/Brussels' // Time zone);
-        // );
+        const every10seconds = new CronJob(
+            '*/10 * * * * *',
+            () => {
+                const update = updateStatus(release);
+            },
+            null, // No onComplete function
+            true, // Start the job right now)
+            'Europe/Brussels' // Time zone);
+        );
+
+        const every30seconds = new CronJob(
+            '*/30 * * * * *',
+            () => {
+                getActiveSeason(release).then((season) => {
+                    const update = updateSeason(season);
+                });
+            },
+            null, // No onComplete function
+            true, // Start the job right now)
+            'Europe/Brussels' // Time zone);
+        );
 
         log.info('APP - express is running');
         log.info(
             'APP - swagger documentation is available at ' +
                 chalk.yellow.underline.underline(
                     'http://127.0.0.1:' + port + '/docs'
-                )
+                ) +
+                '\n'
         );
     });
 }

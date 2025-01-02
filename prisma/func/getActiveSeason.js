@@ -6,7 +6,7 @@ import chalk from 'chalk';
 
 const log = getLogger();
 
-export default async function getAppDataById(id) {
+export default async function getActiveSeason(id) {
     const start = performance.now();
 
     try {
@@ -17,7 +17,7 @@ export default async function getAppDataById(id) {
             },
         });
 
-        return appData;
+        return appData.active_season;
     } catch (error) {
         log.error(chalk.red('Error retrieving app data:'), error);
         throw error; // Re-throw the error after logging it

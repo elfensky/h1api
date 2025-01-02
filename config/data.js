@@ -4,7 +4,7 @@ import axios from 'axios';
 import https from 'https';
 import FormData from 'form-data';
 // fetch
-import { fetchStatus, fetchStatusTEST } from '../updates/updateStatus.js';
+import { fetchStatus } from '../updates/updateStatus.js';
 import updateSeason from '../updates/updateSeason.js';
 // db
 import getAppDataById from '../prisma/func/getAppDataById.js';
@@ -35,39 +35,43 @@ const release = 'helldivers1api@' + process.env.npm_package_version;
  * 3. the current season's status can then be fetched from the API with cron
  */
 
-export default async function configureDATA() {
+export default async function configureDATA(release) {
     const start = performance.now();
-    const release = 'helldivers1api@' + process.env.npm_package_version;
 
     try {
+        log.info(chalk.white('(1/3) CHECKING APPDATA '));
         const appData = await getAppDataById(release);
 
         if (appData && !isMoreThanOneHourAgo(appData.last_updated)) {
-            log.info(chalk.white('(2/3) APPDATA is up to date'));
-            log.info(chalk.green('(3/3) APPDATA CONFIGURED'));
+            log.info(chalk.white('(2/3) APPDATA IS UP TO DATE'));
+            log.info(chalk.green('(3/3) CONFIGURED APPDATA\n'));
             return appData;
         }
 
         if (appData && isMoreThanOneHourAgo(appData.last_updated)) {
-            log.info(
+            log.warn(
                 chalk.white(`(2/3) APPDATA OUTDATED, FETCHING STATUS `) +
                     chalk.blue((performance.now() - start).toFixed(3) + ' ms')
             );
         }
 
-        const data = await fetchStatusTEST(); // get API data so we can set current season
+        if (!appData) {
+            log.warn(chalk.white('(2/3) NO APPDATA FOUND, FETCHING STATUS '));
+        }
+
+        const data = await fetchStatus(); // get API data so we can set current season
         const season = getSeasonFromStatus(data);
 
         const newAppData = await upsertAppData(season, release);
 
         if (!newAppData) {
-            log.error(chalk.red('(3/3) UNABLE TO INITIALIZE APPDATA'));
+            log.error(chalk.red('(3/3) UNABLE TO INITIALIZE APPDATA\n'));
         }
 
         const newSeason = await updateSeason(season);
 
         if (!newSeason) {
-            log.error(chalk.red('(3/3) UNABLE TO INITIALIZE NEWSEASONS'));
+            log.error(chalk.red('(3/3) UNABLE TO INITIALIZE NEWSEASONS\n'));
         }
 
         if (!newAppData || !newSeason) {
@@ -75,7 +79,7 @@ export default async function configureDATA() {
                 cause: 'config/data.js',
             });
         } else {
-            log.info(chalk.green('(3/3) APPDATA UPDATED'));
+            log.info(chalk.green('(3/3) APPDATA UPDATED\n'));
             return newAppData;
         }
     } catch (error) {
@@ -94,9 +98,6 @@ function isMoreThanOneHourAgo(givenTime) {
 
     // Calculate the time one hour ago
     const oneHourAgo = now - 1 * 60 * 60 * 1000;
-
-    console.log('givenTime:', givenTime);
-    console.log('oneHourAgo:', oneHourAgo);
 
     // Compare the given time with the time one hour ago
     return givenTime < oneHourAgo;

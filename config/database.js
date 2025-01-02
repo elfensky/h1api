@@ -35,7 +35,7 @@ export default async function configureDB() {
 
         // migrate the database if needed
         await runMigrations();
-        log.info('DATABASE - completed configuration.');
+        log.info('DATABASE - completed configuration.\n');
         return true;
     }
 
@@ -49,7 +49,7 @@ export default async function configureDB() {
 
         // migrate the database if needed
         await runMigrations();
-        log.info('DATABASE' + chalk.white(' - completed configuration'));
+        log.info('DATABASE' + chalk.white(' - completed configuration\n'));
         return true;
     }
 

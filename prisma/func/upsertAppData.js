@@ -34,7 +34,7 @@ export default async function upsertAppData(season, release) {
         const action = existingRecord ? 'UPDATED' : 'CREATED';
 
         log.info(
-            chalk.white(`(2/2) ${action} APPDATA `) +
+            chalk.white(`(2/3) ${action} APPDATA `) +
                 chalk.blue((performance.now() - start).toFixed(3) + ' ms')
         );
 
