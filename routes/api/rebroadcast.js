@@ -144,8 +144,19 @@ router.post('/rebroadcast', upload.none(), async (req, res) => {
             if (localData) {
                 res.json(localData);
             } else {
-                const remote = await updateSeason(validated.season);
-                res.json(remote);
+                // const remote = await updateSeason(validated.season);
+                // res.json(remote);
+                updateSeason(validated.season).then((remote) => {
+                    if (!remote) {
+                        throw new Error(
+                            `failed updateSeason(${validated.season})`,
+                            {
+                                cause: 'routes/api/rebroadcast.js',
+                            }
+                        );
+                    }
+                    res.json(remote);
+                });
             }
         }
     } catch (error) {
