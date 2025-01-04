@@ -210,6 +210,28 @@ export async function fetchSeasonTEST(season) {
                 event_id: 847,
                 start_time: 1735505161,
                 end_time: 1735677961,
+                enemy: 2,
+                points_max: 82199,
+                points: 48988,
+                status: 'active',
+                players_at_start: 640,
+            },
+            {
+                season: 143,
+                event_id: 848,
+                start_time: 1735505161,
+                end_time: 1735677961,
+                enemy: 1,
+                points_max: 82199,
+                points: 48988,
+                status: 'active',
+                players_at_start: 640,
+            },
+            {
+                season: 143,
+                event_id: 849,
+                start_time: 1735505161,
+                end_time: 1735677961,
                 enemy: 0,
                 points_max: 82199,
                 points: 48988,
@@ -224,7 +246,7 @@ export default async function updateSeason(season) {
     const start = performance.now();
 
     try {
-        const data = await fetchSeason(season);
+        const data = await fetchSeasonTEST(season);
 
         if (!data) {
             throw new Error('No data available', {

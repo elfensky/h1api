@@ -22,8 +22,8 @@ import configureDATA from './config/configureDATA.js';
 //db
 import getActiveSeason from './prisma/func/getActiveSeason.js';
 // updates
-import updateStatus from './updates/updateStatus.js';
-import updateSeason from './updates/updateSeason.js';
+import updateStatus from './auto/updateStatus.js';
+import updateSeason from './auto/updateSeason.js';
 // routes
 import rebroadcastRouter from './routes/api/rebroadcast.js';
 import botRouter from './routes/api/bot.js';
@@ -67,26 +67,26 @@ async function main() {
     // start express server
     app.listen(port, () => {
         const every15seconds = new CronJob(
-            '*/15 * * * * *',
+            '* * * * * *', //'*/15 * * * * *',
             () => {
                 const update = updateStatus(release);
             },
             null, // No onComplete function
-            false, // Start the job right now)
+            true, // Start the job right now)
             'Europe/Brussels' // Time zone);
         );
 
-        const every30seconds = new CronJob(
-            '5/30 * * * * *', //5 is so it's offset from the 15 above
-            () => {
-                getActiveSeason(release).then((season) => {
-                    const update = updateSeason(season);
-                });
-            },
-            null, // No onComplete function
-            false, // Start the job right now)
-            'Europe/Brussels' // Time zone);
-        );
+        // const every30seconds = new CronJob(
+        //     '*/20 * * * * *', //5 is so it's offset from the 15 above
+        //     () => {
+        //         getActiveSeason(release).then((season) => {
+        //             const update = updateSeason(season);
+        //         });
+        //     },
+        //     null, // No onComplete function
+        //     true, // Start the job right now)
+        //     'Europe/Brussels' // Time zone);
+        // );
 
         log.info('APP - express is running');
         log.info(

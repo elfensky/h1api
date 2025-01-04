@@ -1,7 +1,7 @@
 import prisma from '../prisma.js';
 import getActiveSeason from './getActiveSeason.js';
 
-export default async function getDefendEvent() {
+export default async function findDefendEventLatest() {
     const activeSeason = await getActiveSeason();
 
     // Get DefendEvent by season and order by time DESC

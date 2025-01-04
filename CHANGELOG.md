@@ -1,5 +1,12 @@
 This is a changelog for the helldivers1api project.
 
+## 1.1.0 (2025-01-02)
+
+-   bla1
+-   bla2
+-   bla3
+-
+
 ## 1.0.1 (2024-12-28)
 
 -   bla1

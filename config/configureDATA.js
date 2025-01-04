@@ -4,8 +4,8 @@ import axios from 'axios';
 import https from 'https';
 import FormData from 'form-data';
 // fetch
-import { fetchStatus } from '../updates/updateStatus.js';
-import updateSeason from '../updates/updateSeason.js';
+import { fetchStatus } from '../auto/updateStatus.js';
+import updateSeason from '../auto/updateSeason.js';
 // db
 import getAppDataById from '../prisma/func/getAppDataById.js';
 import upsertAppData from '../prisma/func/upsertAppData.js';

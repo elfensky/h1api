@@ -3,7 +3,7 @@ import multer from 'multer';
 // components
 import { rebroadcast_schema } from '../../utilities/zod.js';
 import getInfo from '../../utilities/info.js';
-import updateSeason from '../../updates/updateSeason.js';
+import updateSeason from '../../auto/updateSeason.js';
 //db
 import getStatus from '../../prisma/func/getStatus.js';
 import getSeason from '../../prisma/func/getSeason.js';
@@ -23,7 +23,7 @@ const upload = multer({ dest: 'data/' });
  *     tags:
  *       - Rebroadcast
  *     summary: Perform rebroadcast actions
- *     description: Endpoint to perform rebroadcast actions such as getting campaign status.
+ *     description: Endpoint to perform rebroadcast actions such as getting campaign status or snapshots.
  *     requestBody:
  *       required: true
  *       content:
@@ -33,41 +33,60 @@ const upload = multer({ dest: 'data/' });
  *             properties:
  *               action:
  *                 type: string
- *                 description: The action to perform. Currently supports 'get_campaign_status'.
+ *                 description: The action to perform. Supports 'get_campaign_status' and 'get_snapshots'.
  *                 example: get_campaign_status
+ *               season:
+ *                 type: integer
+ *                 format: int32
+ *                 minimum: 1
+ *                 description: The season to get snapshots for. Required if action is 'get_snapshots'.
+ *                 example: 143
  *         application/x-www-form-urlencoded:
  *           schema:
  *             type: object
  *             properties:
  *               action:
  *                 type: string
- *                 description: The action to perform. Currently supports 'get_campaign_status'.
+ *                 description: The action to perform. Supports 'get_campaign_status' and 'get_snapshots'.
  *                 example: get_campaign_status
+ *               season:
+ *                 type: string
+ *                 description: The season to get snapshots for. Required if action is 'get_snapshots'.
+ *                 example: 143
  *     responses:
  *       200:
- *         description: Successfully retrieved campaign status data
+ *         description: Successfully retrieved data
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 # Define the structure of the successful response data here
  *                 status:
  *                   type: string
  *                   description: The status of the campaign.
  *                   example: active
- *                 # Add other properties as needed
+ *                 # Add other properties as needed for 'get_snapshots' response
  *       400:
- *         description: Bad Request - Invalid action
+ *         description: Bad Request - Invalid input
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
+ *                 info:
+ *                   type: object
+ *                   description: Information about the request.
+ *                   properties:
+ *                     duration:
+ *                       type: number
+ *                       description: Time taken to process the request.
+ *                       example: 123.45
  *                 error:
- *                   type: string
- *                   description: Error message indicating invalid action.
- *                   example: Invalid action
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   description: Error messages indicating what went wrong.
+ *                   example: ["action is required"]
  *       500:
  *         description: Internal Server Error
  *         content:
@@ -83,7 +102,6 @@ const upload = multer({ dest: 'data/' });
  *                       type: integer
  *                       description: HTTP status code.
  *                       example: 500
- *                     # Add other properties as needed
  *                 error:
  *                   type: string
  *                   description: Error message.

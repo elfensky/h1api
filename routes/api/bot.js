@@ -1,7 +1,7 @@
 import express from 'express';
 import { performance } from 'perf_hooks';
 //db
-import getDefendEvent from '../../prisma/func/getDefendEvent.js'; //db
+import findDefendEventLatest from '../../prisma/func/findDefendEventLatest.js'; //db
 import getAttackEvent from '../../prisma/func/getAttackEvent.js'; //db
 //components
 import getInfo from '../../utilities/info.js';
@@ -75,9 +75,9 @@ const router = express.Router();
  */
 router.get('/defend', async (req, res) => {
     try {
-        const data = await getDefendEvent();
+        const data = await findDefendEventLatest();
         if (!data) {
-            throw new Error('failed getDefendEvent()');
+            throw new Error('failed findDefendEventLatest()');
         } else {
             const info = getInfo(req.startTime, 200);
             res.json({ info, data });
@@ -89,10 +89,10 @@ router.get('/defend', async (req, res) => {
     }
 });
 
-// router.get('/defend/:id', async (req, res) => {
-//     console.log('/bot/defend/' + req.params.id);
-//     res.json({ api: '/defend/id', id: req.params.id });
-// });
+router.get('/defend/:id', async (req, res) => {
+    console.log('/bot/defend/' + req.params.id);
+    res.json({ api: '/defend/id', id: req.params.id });
+});
 
 router.get('/attack', async (req, res) => {
     try {

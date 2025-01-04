@@ -1,6 +1,6 @@
 import prisma from '../prisma.js';
 
-export default async function getDefendEvent() {
+export default async function findDefendEventLatest() {
     // Get latest Timestamp record
     const latestTimestamp = await prisma.timestamp.findFirst({
         orderBy: {

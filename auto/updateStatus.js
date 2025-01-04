@@ -83,16 +83,38 @@ export async function fetchStatusTEST() {
         ],
         defend_event: {
             season: 143,
-            event_id: 4247,
-            start_time: 1735687081,
-            end_time: 1735696081,
-            region: 8,
+            event_id: 4307,
+            start_time: 1735939579,
+            end_time: 1735959579,
+            region: 5,
             enemy: 0,
-            points_max: 1911,
-            points: 52,
-            status: 'active',
+            points_max: 1234,
+            points: 0,
+            status: 'active', // active, success, failure
         },
         attack_events: [
+            {
+                season: 143,
+                event_id: 849,
+                start_time: 1735505161,
+                end_time: 1735677961,
+                enemy: 1,
+                points_max: 8888,
+                points: 777,
+                status: 'active',
+                players_at_start: 640,
+            },
+            {
+                season: 143,
+                event_id: 848,
+                start_time: 1735505161,
+                end_time: 1735677961,
+                enemy: 0,
+                points_max: 9999,
+                points: 1000,
+                status: 'fail',
+                players_at_start: 640,
+            },
             {
                 season: 143,
                 event_id: 847,
@@ -199,7 +221,7 @@ export default async function updateStatus(release) {
     const start = performance.now();
 
     try {
-        const data = await fetchStatus();
+        const data = await fetchStatusTEST();
 
         if (!data) {
             throw new Error('No data available', {
