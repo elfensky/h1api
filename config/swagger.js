@@ -49,7 +49,7 @@ export function swaggerDefinition() {
 }
 
 export function swaggerRoutes() {
-    const routes = ['./routes/v1/**/*.js'];
+    const routes = ['./routes/**/*.js'];
     return routes;
 }
 
