@@ -1,10 +1,17 @@
 import express from 'express';
-import { performance } from 'perf_hooks';
-//db
-import findDefendEventLatest from '../../prisma/func/findDefendEventLatest.js'; //db
-import getAttackEvent from '../../prisma/func/getAttackEvent.js'; //db
 //components
+import { schema_defend_event_unique } from '../../utilities/zod.js';
+import { logError } from '../../utilities/errors.js';
 import getInfo from '../../utilities/info.js';
+//db
+import findFirstDefendEvent from '../../prisma/func/findFirstDefendEvent.js'; //db
+import findUniqueDefendEvent from '../../prisma/func/findUniqueDefendEvent.js'; //db
+import getAttackEvent from '../../prisma/func/getAttackEvent.js'; //db
+// logs, monitoring, etc
+import { performance } from 'perf_hooks';
+import { getLogger } from '../../utilities/loggers.js';
+import chalk from 'chalk';
+const log = getLogger();
 //setup
 const router = express.Router();
 
@@ -75,23 +82,42 @@ const router = express.Router();
  */
 router.get('/defend', async (req, res) => {
     try {
-        const data = await findDefendEventLatest();
+        const data = await findFirstDefendEvent();
         if (!data) {
-            throw new Error('failed findDefendEventLatest()');
+            throw new Error('failed findFirstDefendEvent()');
         } else {
             const info = getInfo(req.startTime, 200);
             res.json({ info, data });
         }
     } catch (error) {
-        console.error('Error fetching campaign data:', error);
+        console.error('Error fetching latest defend event:', error);
         const info = getInfo(req.startTime, 500);
         res.status(info.code).json({ info, error: error.message });
     }
 });
 
 router.get('/defend/:id', async (req, res) => {
-    console.log('/bot/defend/' + req.params.id);
-    res.json({ api: '/defend/id', id: req.params.id });
+    try {
+        const validated = schema_defend_event_unique.safeParse(req.params.id);
+
+        if (validated.error) {
+            throw validated.error;
+        }
+
+        const data = await findUniqueDefendEvent(parseInt(validated.data, 10));
+        if (!data) {
+            const info = getInfo(req.startTime, 404);
+            res.status(404).json({
+                info,
+                error: `Can't find a Defend Event with id ${req.params.id}.`,
+            });
+        } else {
+            const info = getInfo(req.startTime, 200);
+            res.json({ info, data });
+        }
+    } catch (error) {
+        logError(req, res, error);
+    }
 });
 
 router.get('/attack', async (req, res) => {

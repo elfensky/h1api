@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const rebroadcast_schema = z
+export const schema_rebroadcast = z
     .object({
         action: z.enum(['get_campaign_status', 'get_snapshots']),
         season: z
@@ -28,3 +28,20 @@ export const rebroadcast_schema = z
             path: ['season'], // This specifies which field the error message should be associated with
         }
     );
+
+export const schema_defend_event_unique = z.string().refine(
+    (id) => {
+        const parsed = parseInt(id, 10);
+        return !isNaN(parsed) && id.trim() !== '';
+
+        // if (!isNaN(parsed) && id.trim() !== '') {
+        //     return true;
+        // } else {
+        //     return false;
+        // }
+    },
+    {
+        message: `provided defend event [:id] is not parsable to an integer`,
+        path: [':id'],
+    }
+);

@@ -67,7 +67,7 @@ async function main() {
     // start express server
     app.listen(port, () => {
         const every15seconds = new CronJob(
-            '* * * * * *', //'*/15 * * * * *',
+            '*/30 * * * * *', //'*/15 * * * * *',
             () => {
                 const update = updateStatus(release);
             },

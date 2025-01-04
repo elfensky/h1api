@@ -1,11 +1,19 @@
 This is a changelog for the helldivers1api project.
 
+## 1.2.0 (2025-01-02)
+
+-   added /bot/defend/:id
+-   fix rebroadcast error logic
+-   logError function
+-   some file organising
+-
+
 ## 1.1.0 (2025-01-02)
 
--   bla1
--   bla2
--   bla3
--
+-   fix swagger docs
+-   update /bot/defend to use getInfo()
+-   implement /bot/defend and /bot/attack
+-   implement rebroadcast
 
 ## 1.0.1 (2024-12-28)
 

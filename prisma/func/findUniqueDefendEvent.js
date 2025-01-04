@@ -6,20 +6,19 @@ import chalk from 'chalk';
 
 const log = getLogger();
 
-export default async function getDefendEventById(event_id) {
+export default async function findUniqueDefendEvent(id) {
     const start = performance.now();
-
     try {
         // Retrieve the app data by ID
         const event = await prisma.defend_events.findUnique({
             where: {
-                event_id: event_id,
+                event_id: id,
             },
         });
 
         return event;
     } catch (error) {
-        log.error(chalk.red('Error retrieving defend_events data:'), error);
+        log.error(chalk.red(`Error retrieving Defend Event #${id}.`), error);
         throw error; // Re-throw the error after logging it
     }
 }

@@ -83,10 +83,10 @@ export async function fetchStatusTEST() {
         ],
         defend_event: {
             season: 143,
-            event_id: 4307,
+            event_id: 4308,
             start_time: 1735939579,
             end_time: 1735959579,
-            region: 5,
+            region: 10,
             enemy: 0,
             points_max: 1234,
             points: 0,

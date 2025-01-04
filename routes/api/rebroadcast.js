@@ -1,7 +1,8 @@
 import express from 'express';
 import multer from 'multer';
 // components
-import { rebroadcast_schema } from '../../utilities/zod.js';
+import { schema_rebroadcast } from '../../utilities/zod.js';
+import { logError } from '../../utilities/errors.js';
 import getInfo from '../../utilities/info.js';
 import updateSeason from '../../auto/updateSeason.js';
 //db
@@ -120,10 +121,10 @@ router.post('/rebroadcast', upload.none(), async (req, res) => {
             throw new Error('action is required');
         }
 
-        const validated = rebroadcast_schema.parse(body);
+        const validated = schema_rebroadcast.parse(body);
 
         if (validated.error) {
-            throw new Error(validatedData.error);
+            throw validated.error;
         }
 
         if (validated.action === 'get_campaign_status') {
@@ -160,20 +161,21 @@ router.post('/rebroadcast', upload.none(), async (req, res) => {
             }
         }
     } catch (error) {
-        if (error.constructor.name === 'ZodError') {
-            const messages = [];
-            for (const issue of error.issues) {
-                messages.push(issue.message);
-            }
-            const info = getInfo(start, 400);
-            res.status(400).json({ info: info, error: messages });
-        } else {
-            log.error(chalk.red('(1/2) in ') + chalk.magenta(error.cause));
-            log.error(chalk.red('(2/2) ' + error.stack));
+        logError(req, res, error);
+        // if (error.constructor.name === 'ZodError') {
+        //     const messages = [];
+        //     for (const issue of error.issues) {
+        //         messages.push(issue.message);
+        //     }
+        //     const info = getInfo(req.startTime, 400);
+        //     res.status(400).json({ info: info, error: messages });
+        // } else {
+        //     log.error(chalk.red('(1/2) in ') + chalk.magenta(error.cause));
+        //     log.error(chalk.red('(2/2) ' + error.stack));
 
-            const info = getInfo(start, 400);
-            res.status(400).json({ info: info, error: error.message });
-        }
+        //     const info = getInfo(req.startTime, 400);
+        //     res.status(400).json({ info: info, error: error.message });
+        // }
     }
 });
 
