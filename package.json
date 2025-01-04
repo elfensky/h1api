@@ -1,6 +1,6 @@
 {
     "name": "h1api",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "description": "This stores historical data from the Helldivers 1 API and functions as a rebroadcaster and cache to prevent the stats page and bot from over-querying the API.",
     "keywords": [
         "api",
