@@ -162,20 +162,6 @@ router.post('/rebroadcast', upload.none(), async (req, res) => {
         }
     } catch (error) {
         logError(req, res, error);
-        // if (error.constructor.name === 'ZodError') {
-        //     const messages = [];
-        //     for (const issue of error.issues) {
-        //         messages.push(issue.message);
-        //     }
-        //     const info = getInfo(req.startTime, 400);
-        //     res.status(400).json({ info: info, error: messages });
-        // } else {
-        //     log.error(chalk.red('(1/2) in ') + chalk.magenta(error.cause));
-        //     log.error(chalk.red('(2/2) ' + error.stack));
-
-        //     const info = getInfo(req.startTime, 400);
-        //     res.status(400).json({ info: info, error: error.message });
-        // }
     }
 });
 

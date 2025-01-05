@@ -1,12 +1,19 @@
 import express from 'express';
 //components
-import { schema_defend_event_unique } from '../../utilities/zod.js';
+import {
+    schema_defend_event_unique,
+    schema_attack_event_unique,
+} from '../../utilities/zod.js';
 import { logError } from '../../utilities/errors.js';
 import getInfo from '../../utilities/info.js';
 //db
 import findFirstDefendEvent from '../../prisma/func/findFirstDefendEvent.js'; //db
+import findManyDefendEvents from '../../prisma/func/findManyDefendEvents.js'; //db
 import findUniqueDefendEvent from '../../prisma/func/findUniqueDefendEvent.js'; //db
-import getAttackEvent from '../../prisma/func/getAttackEvent.js'; //db
+
+import findManyAttackEvents from '../../prisma/func/findManyAttackEvents.js'; //db
+import findManyActiveAttackEvents from '../../prisma/func/findManyActiveAttackEvents.js'; //db
+import findUniqueAttackEvent from '../../prisma/func/findUniqueAttackEvent.js'; //db
 // logs, monitoring, etc
 import { performance } from 'perf_hooks';
 import { getLogger } from '../../utilities/loggers.js';
@@ -82,7 +89,8 @@ const router = express.Router();
  */
 router.get('/defend', async (req, res) => {
     try {
-        const data = await findFirstDefendEvent();
+        const data = await findManyDefendEvents();
+        // const data = await findFirstDefendEvent();
         if (!data) {
             throw new Error('failed findFirstDefendEvent()');
         } else {
@@ -122,9 +130,10 @@ router.get('/defend/:id', async (req, res) => {
 
 router.get('/attack', async (req, res) => {
     try {
-        const data = await getAttackEvent();
+        const data = await findManyAttackEvents();
+        // const data = await findManyActiveAttackEvents();
         if (!data) {
-            throw new Error('failed getAttackEvent()');
+            throw new Error('failed findManyActiveAttackEvents()');
         } else {
             const info = getInfo(req.startTime, 200);
             res.json({ info, data });
@@ -136,9 +145,28 @@ router.get('/attack', async (req, res) => {
     }
 });
 
-// router.get('/attack/:id', async (req, res) => {
-//     console.log('/bot/attack/' + req.params.id);
-//     res.json({ api: '/attack/id', id: req.params.id });
-// });
+router.get('/attack/:id', async (req, res) => {
+    try {
+        const validated = schema_attack_event_unique.safeParse(req.params.id);
+
+        if (validated.error) {
+            throw validated.error;
+        }
+
+        const data = await findUniqueAttackEvent(parseInt(validated.data, 10));
+        if (!data) {
+            const info = getInfo(req.startTime, 404);
+            res.status(404).json({
+                info,
+                error: `Can't find a Defend Event with id ${req.params.id}.`,
+            });
+        } else {
+            const info = getInfo(req.startTime, 200);
+            res.json({ info, data });
+        }
+    } catch (error) {
+        logError(req, res, error);
+    }
+});
 
 export default router;

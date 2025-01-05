@@ -33,15 +33,20 @@ export const schema_defend_event_unique = z.string().refine(
     (id) => {
         const parsed = parseInt(id, 10);
         return !isNaN(parsed) && id.trim() !== '';
-
-        // if (!isNaN(parsed) && id.trim() !== '') {
-        //     return true;
-        // } else {
-        //     return false;
-        // }
     },
     {
         message: `provided defend event [:id] is not parsable to an integer`,
+        path: [':id'],
+    }
+);
+
+export const schema_attack_event_unique = z.string().refine(
+    (id) => {
+        const parsed = parseInt(id, 10);
+        return !isNaN(parsed) && id.trim() !== '';
+    },
+    {
+        message: `provided attack event [:id] is not parsable to an integer`,
         path: [':id'],
     }
 );

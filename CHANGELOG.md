@@ -1,5 +1,9 @@
 This is a changelog for the helldivers1api project.
 
+## Unreleased
+
+-
+
 ## 1.2.0 (2025-01-02)
 
 -   added /bot/defend/:id
