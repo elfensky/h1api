@@ -64,31 +64,31 @@ async function main() {
     await configureDB();
     await configureDATA(release);
 
-    const update = updateStatus(release);
+    // const update = updateStatus(release);
 
     // start express server
     app.listen(port, () => {
-        // const every15seconds = new CronJob(
-        //     '*/30 * * * * *', //'*/15 * * * * *',
-        //     () => {
-        //         const update = updateStatus(release);
-        //     },
-        //     null, // No onComplete function
-        //     true, // Start the job right now)
-        //     'Europe/Brussels' // Time zone);
-        // );
+        const every15seconds = new CronJob(
+            '*/15 * * * * *', //'*/15 * * * * *',
+            () => {
+                const update = updateStatus(release);
+            },
+            null, // No onComplete function
+            true, // Start the job right now)
+            'Europe/Brussels' // Time zone);
+        );
 
-        // const every30seconds = new CronJob(
-        //     '*/20 * * * * *', //5 is so it's offset from the 15 above
-        //     () => {
-        //         getActiveSeason(release).then((season) => {
-        //             const update = updateSeason(season);
-        //         });
-        //     },
-        //     null, // No onComplete function
-        //     true, // Start the job right now)
-        //     'Europe/Brussels' // Time zone);
-        // );
+        const every20seconds = new CronJob(
+            '*/20 * * * * *', //5 is so it's offset from the 15 above
+            () => {
+                getActiveSeason(release).then((season) => {
+                    const update = updateSeason(season);
+                });
+            },
+            null, // No onComplete function
+            true, // Start the job right now)
+            'Europe/Brussels' // Time zone);
+        );
 
         log.info('APP - express is running');
         log.info(

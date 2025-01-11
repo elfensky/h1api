@@ -246,7 +246,7 @@ export default async function updateSeason(season) {
     const start = performance.now();
 
     try {
-        const data = await fetchSeasonTEST(season);
+        const data = await fetchSeason(season);
 
         if (!data) {
             throw new Error('No data available', {
@@ -338,7 +338,8 @@ export default async function updateSeason(season) {
                 const duration = performance.now() - start;
 
                 log.info(
-                    chalk.green(`(9/9) UPDATED SEASON `) +
+                    chalk.white('(9/9)') +
+                        chalk.green(` UPDATED SEASON `) +
                         chalk.magenta(season) +
                         chalk.white(' in ') +
                         chalk.blue(
