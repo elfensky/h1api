@@ -66,7 +66,6 @@ export async function fetchStatusTEST() {
     const timestampTwoHoursFuture = Math.floor(twoHoursFuture.getTime() / 1000);
     const timestampNow = Math.floor(now.getTime() / 1000);
 
-    console.log('timestampOneHourFuture', timestampOneHourFuture);
     return {
         time: 1736626740,
         error_code: 0,
@@ -214,7 +213,7 @@ export default async function updateStatus(release) {
     const start = performance.now();
 
     try {
-        const data = await fetchStatusTEST();
+        const data = await fetchStatus();
 
         if (!data) {
             throw new Error('No data available', {
