@@ -3,20 +3,20 @@ import express from 'express';
 import {
     schema_defend_event_unique,
     schema_attack_event_unique,
-} from '../../utilities/zod.js';
-import { logError } from '../../utilities/errors.js';
-import getInfo from '../../utilities/info.js';
+} from '../utilities/zod.js';
+import { logError } from '../utilities/errors.js';
+import getInfo from '../utilities/info.js';
 //db
-import findFirstDefendEvent from '../../prisma/func/findFirstDefendEvent.js'; //db
-import findManyDefendEvents from '../../prisma/func/findManyDefendEvents.js'; //db
-import findUniqueDefendEvent from '../../prisma/func/findUniqueDefendEvent.js'; //db
+import findFirstDefendEvent from '../prisma/func/findFirstDefendEvent.js'; //db
+import findManyDefendEvents from '../prisma/func/findManyDefendEvents.js'; //db
+import findUniqueDefendEvent from '../prisma/func/findUniqueDefendEvent.js'; //db
 
-import findManyAttackEvents from '../../prisma/func/findManyAttackEvents.js'; //db
-import findManyActiveAttackEvents from '../../prisma/func/findManyActiveAttackEvents.js'; //db
-import findUniqueAttackEvent from '../../prisma/func/findUniqueAttackEvent.js'; //db
+import findManyAttackEvents from '../prisma/func/findManyAttackEvents.js'; //db
+import findManyActiveAttackEvents from '../prisma/func/findManyActiveAttackEvents.js'; //db
+import findUniqueAttackEvent from '../prisma/func/findUniqueAttackEvent.js'; //db
 // logs, monitoring, etc
 import { performance } from 'perf_hooks';
-import { getLogger } from '../../utilities/loggers.js';
+import { getLogger } from '../utilities/loggers.js';
 import chalk from 'chalk';
 const log = getLogger();
 //setup

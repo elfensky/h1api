@@ -1,4 +1,6 @@
-export function swaggerDefinition() {
+import swaggerJsdoc from 'swagger-jsdoc';
+
+function swaggerDefinition() {
     const environment = process.env.NODE_ENV || 'development';
     let server = {};
 
@@ -48,16 +50,29 @@ export function swaggerDefinition() {
     };
 }
 
-export function swaggerRoutes() {
+function swaggerRoutes() {
     const routes = ['./routes/**/*.js'];
     return routes;
 }
 
-export function swaggerOptions() {
+function swaggerDocument() {
     const definition = swaggerDefinition();
     const routes = swaggerRoutes();
+
     return {
         definition, // Options for the swagger docs
         apis: routes, // Paths containing docs, adjust the path according to your project structure
     };
 }
+
+function options() {
+    return {
+        explorer: true,
+        customJs: '/js/swaggerTracking.js',
+    };
+}
+
+const swaggerSpec = swaggerJsdoc(swaggerDocument()); // Initialize swagger-jsdoc
+const swaggerOptions = options();
+
+export { swaggerSpec, swaggerOptions };

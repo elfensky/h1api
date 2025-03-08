@@ -1,16 +1,16 @@
 import express from 'express';
 import multer from 'multer';
 // components
-import { schema_rebroadcast } from '../../utilities/zod.js';
-import { logError } from '../../utilities/errors.js';
-import getInfo from '../../utilities/info.js';
-import updateSeason from '../../auto/updateSeason.js';
+import { schema_rebroadcast } from '../utilities/zod.js';
+import { logError } from '../utilities/errors.js';
+import getInfo from '../utilities/info.js';
+import updateSeason from '../auto/updateSeason.js';
 //db
-import getStatus from '../../prisma/func/getStatus.js';
-import getSeason from '../../prisma/func/getSeason.js';
+import getStatus from '../prisma/func/getStatus.js';
+import getSeason from '../prisma/func/getSeason.js';
 // logs, monitoring, etc
 import { performance } from 'perf_hooks';
-import { getLogger } from '../../utilities/loggers.js';
+import { getLogger } from '../utilities/loggers.js';
 import chalk from 'chalk';
 const log = getLogger();
 // setup

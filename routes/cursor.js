@@ -1,9 +1,9 @@
 import express from 'express';
 // Assume you have a function to get timestamps from your database
-import prisma from '../../prisma/prisma.js';
-import getInfo from '../../utilities/info.js';
-import isValidUUIDv7 from '../../utilities/isValidUUIDv7.js';
-import { HttpCodeError } from '../../utilities/errors.js';
+import prisma from '../prisma/prisma.js';
+import getInfo from '../utilities/info.js';
+import isValidUUIDv7 from '../utilities/isValidUUIDv7.js';
+import { HttpCodeError } from '../utilities/errors.js';
 // setup
 const router = express.Router();
 

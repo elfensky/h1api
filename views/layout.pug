@@ -1,0 +1,21 @@
+//- variables come from the express route
+html
+    head
+        title Pug - #{title}
+        script(defer, src="https://umami.lavrenov.io/script.js", data-website-id="93ee0589-fb24-43f4-ad6c-929c8c0d7644")
+        link(rel='stylesheet', href='/css/reset.css')
+        link(rel='stylesheet', href='/css/style.css')
+    body
+        header
+            nav
+                ul
+                    li
+                        a(href='/docs') Docs
+                    li
+                        a(href='/rebroadcast') reb©roadcastAPI1
+                    li
+                        a(href='/bot') botAPI2
+        main
+            block content
+        footer
+            p ©️ Andrei Lavrenov #{year}
