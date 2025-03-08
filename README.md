@@ -26,6 +26,7 @@ npm i
 # host.docker.internal is a special hostname that resolves to the internal IP address of the host machine
 # DATABASE_URL="mysql://user:password@host.docker.internal/database_name"
 DATABASE_URL=your-database-url-here
+
 ```
 
 3. Run `npm run dev` to start the api with nodemon, which will restart the bot on file changes
