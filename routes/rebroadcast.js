@@ -4,7 +4,7 @@ import multer from 'multer';
 import { schema_rebroadcast } from '../utilities/zod.js';
 import { logError } from '../utilities/errors.js';
 import getInfo from '../utilities/info.js';
-import updateSeason from '../auto/updateSeason.js';
+import updateSeason from '../crons/updateSeason.js';
 //db
 import getStatus from '../prisma/func/getStatus.js';
 import getSeason from '../prisma/func/getSeason.js';

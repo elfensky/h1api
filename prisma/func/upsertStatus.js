@@ -9,6 +9,9 @@ export default async function upsertStatus(season, data) {
     const start = performance.now();
 
     try {
+        const now = new Date();
+        now.setUTCHours(0, 0, 0, 1);
+
         const existingRecord = await prisma.status.findUnique({
             where: {
                 time: data.time,
@@ -20,6 +23,7 @@ export default async function upsertStatus(season, data) {
                 time: data.time,
             },
             update: {
+                date: now,
                 season: season,
                 attack_events: data.attack_events,
                 campaign_status: data.campaign_status,
@@ -27,6 +31,7 @@ export default async function upsertStatus(season, data) {
                 statistics: data.statistics,
             },
             create: {
+                date: now,
                 season: season,
                 time: data.time,
                 attack_events: data.attack_events,

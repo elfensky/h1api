@@ -14,6 +14,7 @@ generator client {
 model appdata {
     id String @id @unique
     active_season Int
+    active_date DateTime //whether to override the status with latest info or create a new one. one per day.
     last_updated DateTime @default(now())
 }
 
@@ -71,12 +72,14 @@ model snapshots {
 // #region STATUS (get_campaign_status) AND RELATED TABLES
 model status {
   id   String @id @default(uuid(7))
+  Date  DateTime // The day the status was updated - mostly used for human debugging
+
   season Int
-  time Int @unique
+  time   Int @unique
   campaign_status Json
-  defend_event Json
-  attack_events Json
-  statistics Json
+  defend_event    Json
+  attack_events   Json
+  statistics      Json
   // relationship
   linked_statistics statistics[] @relation("OneStatusToManyStatistics")
 }

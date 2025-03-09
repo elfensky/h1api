@@ -21,8 +21,8 @@ import configureDATA from './config/data.js';
 //db
 import getActiveSeason from './prisma/func/getActiveSeason.js';
 // updates
-import updateStatus from './auto/updateStatus.js';
-import updateSeason from './auto/updateSeason.js';
+import updateStatus from './crons/updateStatus.js';
+import updateSeason from './crons/updateSeason.js';
 // routes
 import rebroadcastRouter from './routes/rebroadcast.js';
 import botRouter from './routes/bot.js';
@@ -86,6 +86,8 @@ async function main() {
 
     // start express server
     app.listen(port, () => {
+        updateStatus(release);
+
         // const every15seconds = new CronJob(
         //     '*/15 * * * * *', //'*/15 * * * * *',
         //     () => {

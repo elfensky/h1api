@@ -14,7 +14,7 @@ export default async function configureDB() {
     const provider = getPrismaProvider();
 
     if (provider === 'sqlite') {
-        log.info('DATABASE - using ' + chalk.yellow('sqlite') + ' provider.');
+        log.info('DATABASE - using ' + chalk.yellow(provider) + ' provider.');
 
         const currentMode = await prisma.$queryRaw`PRAGMA journal_mode;`;
 
@@ -43,7 +43,21 @@ export default async function configureDB() {
         log.info(
             'DATABASE' +
                 chalk.white(' - using ') +
-                chalk.yellow('mysql') +
+                chalk.yellow(provider) +
+                chalk.white(' provider')
+        );
+
+        // migrate the database if needed
+        await runMigrations();
+        log.info('DATABASE' + chalk.white(' - completed configuration\n'));
+        return true;
+    }
+
+    if (provider === 'postgresql') {
+        log.info(
+            'DATABASE' +
+                chalk.white(' - using ') +
+                chalk.yellow(provider) +
                 chalk.white(' provider')
         );
 

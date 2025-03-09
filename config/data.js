@@ -4,11 +4,14 @@ import axios from 'axios';
 import https from 'https';
 import FormData from 'form-data';
 // fetch
-import { fetchStatus } from '../auto/updateStatus.js';
-import updateSeason from '../auto/updateSeason.js';
+import { fetchStatus } from '../crons/updateStatus.js';
+import updateSeason from '../crons/updateSeason.js';
 // db
-import getAppDataById from '../prisma/func/getAppDataById.js';
-import upsertAppData from '../prisma/func/upsertAppData.js';
+import {
+    getAppDataById,
+    upsertAppData,
+    getAppData,
+} from '../prisma/functions/appdata.js';
 // helpers
 import { verify } from '../utilities/compare.js';
 import getSeasonFromStatus from '../utilities/getSeasonFromStatus.js';
@@ -40,11 +43,11 @@ export default async function configureDATA(release) {
 
     try {
         log.info(chalk.white('(1/?) CHECKING APPDATA '));
+
         const appData = await getAppDataById(release);
 
         if (appData && !isMoreThanOneHourAgo(appData.last_updated)) {
             log.info(chalk.white('(2/2) APPDATA IS UP TO DATE'));
-            // log.info(chalk.green('(3/3) CONFIGURED APPDATA\n'));
             return appData;
         }
 
